@@ -29,9 +29,6 @@
               {{ formatCoffeeName(coffee.name) }}
             </h3>
             <p class="mt-6 text-bone/55 leading-relaxed">
-              {{ capitalizeFirst(localizeCoffee(coffee).story) }}
-            </p>
-            <p class="mt-5 text-sm text-bone/50 leading-snug">
               {{ capitalizeFirst(localizeCoffee(coffee).description) }}
             </p>
             <p
