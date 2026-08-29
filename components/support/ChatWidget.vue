@@ -18,7 +18,7 @@
         :aria-label="$t('support.title')"
       >
         <header
-          class="support-chat__header flex items-start gap-3 border-b border-bone/10 px-4 py-3"
+          class="support-chat__header shrink-0 flex items-start gap-3 border-b border-bone/10 px-4 py-3"
         >
           <div class="flex min-w-0 flex-1 items-start gap-2">
             <div class="min-w-0">
@@ -56,77 +56,85 @@
         />
 
         <template v-else>
-          <div v-if="chat.guestName" class="border-b border-bone/10 px-4 py-2 text-xs text-bone/45">
-            {{ chat.guestName }} · {{ chat.guestEmail }}
-          </div>
-
-          <div
-            ref="messagesEl"
-            class="support-chat__messages flex-1 space-y-3 overflow-y-auto px-4 py-4"
-          >
-            <p v-if="chat.isConnecting && !chat.messages.length" class="text-sm text-bone/45">
-              {{ $t('support.connecting') }}
-            </p>
-
-            <p v-else-if="chat.error === 'connection'" class="text-sm text-ember">
-              {{ $t('support.connectionError') }}
-            </p>
-
-            <article
-              v-for="message in chat.messages"
-              :key="message.id"
-              class="flex"
-              :class="message.sender === 'user' ? 'justify-end' : 'justify-start'"
+          <div class="flex min-h-0 flex-1 flex-col overflow-hidden">
+            <div
+              v-if="chat.guestName"
+              class="shrink-0 border-b border-bone/10 px-4 py-2 text-xs text-bone/45"
             >
-              <div
-                class="max-w-[85%] px-3 py-2 text-sm leading-relaxed"
-                :class="
-                  message.sender === 'user'
-                    ? 'bg-bronze/20 text-bone border border-bronze/25'
-                    : 'bg-bone/5 text-bone/80 border border-bone/10'
-                "
-              >
-                <p class="whitespace-pre-wrap break-words">{{ message.text }}</p>
-                <p class="mt-1 text-[10px] tracking-[0.08em] uppercase text-bone/35">
-                  {{ formatTime(message.createdAt) }}
-                </p>
-              </div>
-            </article>
-          </div>
-
-          <form class="border-t border-bone/10 p-3" @submit.prevent="submit">
-            <div class="flex items-stretch gap-2">
-              <textarea
-                v-model="draft"
-                rows="2"
-                class="support-chat__textarea min-h-[44px] max-h-28 flex-1 resize-none bg-transparent px-3 py-2 text-sm text-bone outline-none placeholder:text-bone/35"
-                :placeholder="$t('support.placeholder')"
-                :disabled="!chat.isConnected"
-                @keydown.enter.exact.prevent="submit"
-              />
-              <button
-                type="submit"
-                class="support-chat__send magnetic-btn magnetic-btn--filled shrink-0 flex w-11 items-center justify-center"
-                :disabled="!canSend"
-                :aria-label="$t('support.send')"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  class="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  aria-hidden="true"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M5 12l14-7-7 14-2-5-5-2z"
-                  />
-                </svg>
-              </button>
+              {{ chat.guestName }} · {{ chat.guestEmail }}
             </div>
-          </form>
+
+            <div
+              ref="messagesEl"
+              class="support-chat__messages min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4"
+              @scroll="messagesScroll.onScroll"
+            >
+              <p v-if="chat.loadingMoreMessages" class="text-center text-xs text-bone/40">…</p>
+
+              <p v-if="chat.isConnecting && !chat.messages.length" class="text-sm text-bone/45">
+                {{ $t('support.connecting') }}
+              </p>
+
+              <p v-else-if="chat.error === 'connection'" class="text-sm text-ember">
+                {{ $t('support.connectionError') }}
+              </p>
+
+              <article
+                v-for="message in chat.messages"
+                :key="message.id"
+                class="flex"
+                :class="message.sender === 'user' ? 'justify-end' : 'justify-start'"
+              >
+                <div
+                  class="max-w-[85%] px-3 py-2 text-sm leading-relaxed"
+                  :class="
+                    message.sender === 'user'
+                      ? 'bg-bronze/20 text-bone border border-bronze/25'
+                      : 'bg-bone/5 text-bone/80 border border-bone/10'
+                  "
+                >
+                  <p class="whitespace-pre-wrap break-words">{{ message.text }}</p>
+                  <p class="mt-1 text-[10px] tracking-[0.08em] uppercase text-bone/35">
+                    {{ formatTime(message.createdAt) }}
+                  </p>
+                </div>
+              </article>
+            </div>
+
+            <form class="shrink-0 border-t border-bone/10 p-3" @submit.prevent="submit">
+              <div class="flex items-stretch gap-2">
+                <textarea
+                  v-model="draft"
+                  rows="2"
+                  class="support-chat__textarea min-h-[44px] max-h-28 flex-1 resize-none bg-transparent px-3 py-2 text-sm text-bone outline-none placeholder:text-bone/35"
+                  :placeholder="$t('support.placeholder')"
+                  :disabled="!chat.isConnected"
+                  @keydown.enter.exact.prevent="submit"
+                />
+                <button
+                  type="submit"
+                  class="support-chat__send magnetic-btn magnetic-btn--filled shrink-0 flex w-11 items-center justify-center"
+                  :disabled="!canSend"
+                  :aria-label="$t('support.send')"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    class="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    aria-hidden="true"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M5 12l14-7-7 14-2-5-5-2z"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </form>
+          </div>
         </template>
       </div>
     </Transition>
@@ -195,6 +203,35 @@ function scrollToBottom() {
   })
 }
 
+async function loadOlderMessages() {
+  const el = messagesEl.value
+  if (!el || chat.loadingMoreMessages || !chat.messagesHasMore) return
+
+  const previousHeight = el.scrollHeight
+  await chat.loadOlderMessages()
+
+  await nextTick()
+  if (!messagesEl.value) return
+  messagesEl.value.scrollTop = messagesEl.value.scrollHeight - previousHeight
+}
+
+const messagesScroll = useScrollLoad(() => messagesEl.value, loadOlderMessages, {
+  canLoadMore: () =>
+    chat.messagesHasMore &&
+    !chat.isConnecting &&
+    !chat.loadingMoreMessages &&
+    chat.messages.length > 0 &&
+    chat.profileReady,
+  isScrollTrigger: isNearScrollTop,
+})
+
+const isUnderfilled = (element: HTMLElement) => element.scrollHeight <= element.clientHeight + 1
+
+async function ensureMessagesFilled() {
+  if (!chat.messagesHasMore || chat.isConnecting) return
+  await messagesScroll.ensureFilled(isUnderfilled)
+}
+
 function submitProfile(values: { guestName: string; guestEmail: string }) {
   chat.setProfile(values)
   chat.connect(locale.value)
@@ -212,9 +249,19 @@ function submit() {
 }
 
 watch(
-  () => chat.messages.length,
+  () => chat.messages.at(-1)?.id,
   () => {
     if (chat.isOpen && chat.profileReady) scrollToBottom()
+  },
+)
+
+watch(
+  () => [chat.initialized, chat.messagesHasMore] as const,
+  async ([initialized, hasMore]) => {
+    if (!initialized || !chat.isOpen) return
+    await nextTick()
+    scrollToBottom()
+    if (hasMore) await ensureMessagesFilled()
   },
 )
 
@@ -226,8 +273,10 @@ watch(
     chat.hydrateProfile()
 
     if (chat.profileReady) {
-      chat.connect(locale.value)
+      await chat.connect(locale.value)
+      await nextTick()
       scrollToBottom()
+      await ensureMessagesFilled()
       return
     }
 

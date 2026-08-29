@@ -11,12 +11,23 @@ import {
 
 let socket: Socket | null = null
 
+function prependOlderMessages(current: ChatMessage[], older: ChatMessage[]): ChatMessage[] {
+  const existingIds = new Set(current.map((item) => item.id))
+  const uniqueOlder = older.filter((item) => !existingIds.has(item.id))
+
+  if (!uniqueOlder.length) return current
+
+  return [...uniqueOlder, ...current]
+}
+
 export const useSupportChatStore = defineStore('supportChat', {
   state: () => ({
     isOpen: false,
     isConnected: false,
     isConnecting: false,
     messages: [] as ChatMessage[],
+    messagesHasMore: false,
+    loadingMoreMessages: false,
     unreadCount: 0,
     error: null as string | null,
     initialized: false,
@@ -68,18 +79,36 @@ export const useSupportChatStore = defineStore('supportChat', {
     },
 
     async connect(locale = 'ru') {
-      if (!import.meta.client || this.isConnecting || socket?.connected) return
+      if (!import.meta.client) return
 
       this.hydrateProfile()
 
       if (!this.profileReady) return
 
-      this.isConnecting = true
-      this.error = null
-
-      const { io } = await import('socket.io-client')
       const sessionId = getChatSessionId()
       const chatLocale = locale === 'en' ? 'en' : 'ru'
+      const joinPayload = {
+        sessionId,
+        locale: chatLocale,
+        guestName: this.guestName,
+        guestEmail: this.guestEmail,
+      }
+
+      if (socket?.connected) {
+        this.isConnected = true
+        this.isConnecting = false
+        socket.emit('support:join', joinPayload)
+        return
+      }
+
+      if (this.isConnecting) return
+
+      this.isConnecting = true
+      this.error = null
+      this.messagesHasMore = false
+      this.loadingMoreMessages = false
+
+      const { io } = await import('socket.io-client')
 
       if (socket) {
         socket.removeAllListeners()
@@ -94,12 +123,7 @@ export const useSupportChatStore = defineStore('supportChat', {
       socket.on('connect', () => {
         this.isConnected = true
         this.isConnecting = false
-        socket?.emit('support:join', {
-          sessionId,
-          locale: chatLocale,
-          guestName: this.guestName,
-          guestEmail: this.guestEmail,
-        })
+        socket?.emit('support:join', joinPayload)
       })
 
       socket.on('disconnect', () => {
@@ -108,14 +132,38 @@ export const useSupportChatStore = defineStore('supportChat', {
 
       socket.on(
         'support:history',
-        (payload: { messages?: ChatMessage[]; guestName?: string; guestEmail?: string }) => {
+        (payload: {
+          messages?: ChatMessage[]
+          hasMore?: boolean
+          guestName?: string
+          guestEmail?: string
+        }) => {
           this.messages = payload.messages ?? []
+          this.messagesHasMore = Boolean(payload.hasMore)
+          this.loadingMoreMessages = false
 
           if (payload.guestName) this.guestName = payload.guestName
           if (payload.guestEmail) this.guestEmail = payload.guestEmail
 
           this.initialized = true
           this.error = null
+        },
+      )
+
+      socket.on(
+        'support:history-page',
+        (payload: { messages?: ChatMessage[]; hasMore?: boolean }) => {
+          const older = payload.messages ?? []
+
+          if (!older.length) {
+            this.messagesHasMore = false
+            this.loadingMoreMessages = false
+            return
+          }
+
+          this.messages = prependOlderMessages(this.messages, older)
+          this.messagesHasMore = Boolean(payload.hasMore)
+          this.loadingMoreMessages = false
         },
       )
 
@@ -133,14 +181,56 @@ export const useSupportChatStore = defineStore('supportChat', {
       })
 
       socket.on('support:error', (payload: { message?: string }) => {
-        this.error = payload.message ?? 'Chat error'
+        if (!this.loadingMoreMessages) {
+          this.error = payload.message ?? 'Chat error'
+        }
         this.isConnecting = false
+        this.loadingMoreMessages = false
       })
 
       socket.on('connect_error', () => {
         this.isConnected = false
         this.isConnecting = false
         this.error = 'connection'
+        this.loadingMoreMessages = false
+      })
+    },
+
+    loadOlderMessages() {
+      if (
+        !import.meta.client ||
+        this.loadingMoreMessages ||
+        !this.messagesHasMore ||
+        !this.messages.length ||
+        !socket?.connected
+      ) {
+        return Promise.resolve()
+      }
+
+      this.loadingMoreMessages = true
+      socket.emit('support:load-more', { before: this.messages[0]?.id })
+
+      return new Promise<void>((resolve) => {
+        let settled = false
+
+        const finish = () => {
+          if (settled) return
+          settled = true
+          clearTimeout(timeoutId)
+          socket?.off('support:history-page', onPage)
+          resolve()
+        }
+
+        const onPage = () => {
+          finish()
+        }
+
+        const timeoutId = setTimeout(() => {
+          this.loadingMoreMessages = false
+          finish()
+        }, 10_000)
+
+        socket?.once('support:history-page', onPage)
       })
     },
 
@@ -161,6 +251,7 @@ export const useSupportChatStore = defineStore('supportChat', {
 
       this.isConnected = false
       this.isConnecting = false
+      this.loadingMoreMessages = false
     },
   },
 })
