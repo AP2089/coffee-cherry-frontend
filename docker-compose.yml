@@ -1,0 +1,21 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NUXT_PUBLIC_API_URL: http://localhost:3001/api
+        NUXT_API_URL: http://host.docker.internal:3001/api
+    container_name: coffee-cherry-frontend
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3000
+      NITRO_HOST: 0.0.0.0
+      NITRO_PORT: 3000
+      NUXT_PUBLIC_API_URL: http://localhost:3001/api
+      NUXT_API_URL: http://host.docker.internal:3001/api
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'

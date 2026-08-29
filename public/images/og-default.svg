@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#0E0C0A"/>
+  <circle cx="980" cy="120" r="220" fill="#A67C52" opacity="0.18"/>
+  <circle cx="180" cy="520" r="180" fill="#C9A0B0" opacity="0.12"/>
+  <text x="80" y="300" fill="#EDE8DF" font-family="Georgia, serif" font-size="96" font-weight="600">coffee cherry</text>
+  <text x="80" y="360" fill="#A67C52" font-family="Arial, sans-serif" font-size="28" letter-spacing="8">5 COFFEES · 5 STORIES</text>
+</svg>

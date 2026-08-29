@@ -1,0 +1,210 @@
+{
+  "brand": {
+    "name": {
+      "full": "coffee cherry",
+      "short": "coffee"
+    },
+    "lab": "cherry"
+  },
+  "nav": {
+    "collection": "коллекция",
+    "story": "история",
+    "cart": "корзина",
+    "open": {
+      "cart": "Открыть корзину"
+    }
+  },
+  "home": {
+    "seo": {
+      "title": "coffee cherry — specialty coffee",
+      "description": "5 сортов. 5 историй. 1 coffee cherry. Премиальный specialty-кофе с ограниченным ассортиментом."
+    },
+    "scroll": "листать",
+    "load": {
+      "error": {
+        "title": "Не удалось загрузить коллекцию",
+        "description": "Проверьте, что сервер запущен и данные загружены."
+      }
+    },
+    "empty": {
+      "title": "Коллекция пуста",
+      "description": "Заполните каталог:"
+    }
+  },
+  "story": {
+    "seo": {
+      "title": "история",
+      "description": "История coffee cherry — лаборатории вкуса с пятью сортами specialty-кофе."
+    },
+    "label": "история",
+    "p2": "Мы не размываем внимание бесконечным ассортиментом. Мы обжариваем медленно, рассказываем честно и продаём только то, во что верим."
+  },
+  "coffee": {
+    "not": {
+      "found": {
+        "title": "Сорт не найден",
+        "description": "Такого кофе нет в коллекции coffee cherry."
+      }
+    },
+    "to": {
+      "collection": "К коллекции"
+    },
+    "weight": "вес",
+    "quantity": "количество",
+    "out": {
+      "of": {
+        "stock": "Нет в наличии"
+      }
+    },
+    "stock": {
+      "limited": "Доступно только {count} шт.",
+      "label": "наличие",
+      "bags": "{count} уп."
+    },
+    "add": {
+      "to": {
+        "cart": "В корзину"
+      }
+    },
+    "adding": "Добавляем…",
+    "flavor": {
+      "notes": "вкусовые ноты"
+    },
+    "story": "история",
+    "country": "страна",
+    "region": "регион",
+    "variety": "разновидность",
+    "process": "обработка",
+    "altitude": "высота"
+  },
+  "moods": {
+    "bloom": "цветочный · лёгкий · свежий",
+    "velvet": "мягкий · шоколад · насыщенный",
+    "santos": "тёплый · ореховый · сладкий",
+    "noir": "тёмный · выразительный · цитрус",
+    "ember": "тёплый · пряный · глубокий"
+  },
+  "cart": {
+    "seo": {
+      "title": "корзина",
+      "description": "Ваша корзина coffee cherry."
+    },
+    "label": "корзина",
+    "title": "Корзина",
+    "empty": {
+      "title": "Корзина пуста",
+      "description": "Добавьте один из пяти сортов — bloom, velvet, santos, noir или ember."
+    },
+    "total": "итого",
+    "items": {
+      "count": "{count} поз. в заказе"
+    },
+    "checkout": "Оформить заказ",
+    "clear": "Очистить корзину",
+    "remove": "удалить",
+    "decrease": "Уменьшить",
+    "increase": "Увеличить",
+    "item": {
+      "meta": "{country} · {weight} г"
+    }
+  },
+  "checkout": {
+    "seo": {
+      "title": "оформление",
+      "description": "Оформление заказа coffee cherry."
+    },
+    "label": "оформление",
+    "title": "Оформление",
+    "empty": {
+      "title": "Нечего оформлять",
+      "description": "Сначала добавьте кофе в корзину."
+    },
+    "order": "заказ",
+    "total": "итого",
+    "item": {
+      "line": "{name} · {weight} г × {quantity}"
+    },
+    "submit": "Подтвердить заказ",
+    "submitting": "Оформляем…",
+    "error": {
+      "fallback": "Не удалось оформить заказ. Проверьте наличие товара и данные."
+    },
+    "fields": {
+      "name": "имя",
+      "phone": "телефон",
+      "email": "email",
+      "city": "город",
+      "address": "адрес",
+      "comment": "комментарий"
+    },
+    "errors": {
+      "name": "Укажите имя",
+      "phone": "Укажите телефон",
+      "email": "Некорректный email",
+      "city": "Укажите город",
+      "address": "Укажите адрес"
+    }
+  },
+  "order": {
+    "success": {
+      "seo": {
+        "title": "заказ оформлен",
+        "description": "Заказ успешно оформлен в coffee cherry."
+      },
+      "not": {
+        "found": {
+          "title": "Заказ не найден",
+          "description": "Проверьте ссылку или оформите новый заказ."
+        }
+      },
+      "label": "заказ подтверждён",
+      "title": "Спасибо",
+      "lead": "Заказ принят. Мы свяжемся с вами для подтверждения доставки.",
+      "order": {
+        "number": "номер заказа"
+      },
+      "item": {
+        "meta": "{weight} г × {quantity}"
+      },
+      "total": "итого",
+      "delivery": "доставка",
+      "status": "статус: {status}",
+      "back": {
+        "home": "Вернуться в cherry"
+      }
+    },
+    "status": {
+      "pending": "ожидает",
+      "confirmed": "подтверждён",
+      "shipped": "отправлен",
+      "delivered": "доставлен",
+      "cancelled": "отменён"
+    }
+  },
+  "footer": {
+    "collection": "коллекция",
+    "visit": "контакты",
+    "address": "Краснодарский край, Анапа, Набережная улица, 132",
+    "email": "hello{'@'}coffeecherry.store",
+    "copyright": "© {year} coffee cherry"
+  },
+  "error": {
+    "default": {
+      "title": "Что-то пошло не так",
+      "description": "Попробуйте обновить страницу или вернуться на главную."
+    },
+    "home": "На главную",
+    "not": {
+      "found": {
+        "title": "404",
+        "description": "Страница не существует в coffee cherry."
+      }
+    },
+    "seo": {
+      "404": "Страница не найдена."
+    }
+  },
+  "common": {
+    "grams": "{weight} г"
+  }
+}

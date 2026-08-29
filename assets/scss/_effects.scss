@@ -1,0 +1,121 @@
+@use 'variables' as *;
+
+.magnetic-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid rgba($bone, 0.22);
+  background: transparent;
+  color: $bone;
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition:
+    border-color 0.4s $ease-premium,
+    color 0.4s $ease-premium,
+    transform 0.45s $ease-premium,
+    background 0.4s $ease-premium;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: $bone;
+    transform: translateY(101%);
+    transition: transform 0.5s $ease-premium;
+    z-index: -1;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: $ink;
+    border-color: $bone;
+    outline: none;
+
+    &::before {
+      transform: translateY(0);
+    }
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &--filled {
+    background: $bone;
+    color: $ink;
+    border-color: $bone;
+
+    &::before {
+      background: $bronze;
+    }
+
+    &:hover,
+    &:focus-visible {
+      color: $bone;
+    }
+  }
+}
+
+.parallax-layer {
+  will-change: transform;
+  transition: transform 0.15s linear;
+}
+
+.hover-lift {
+  transition:
+    transform 0.6s $ease-premium,
+    filter 0.6s $ease-premium;
+
+  &:hover {
+    transform: translateY(-8px) scale(1.01);
+  }
+}
+
+.cursor-glow {
+  position: fixed;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 40;
+  background: radial-gradient(circle, rgba($bronze, 0.12), transparent 70%);
+  transform: translate(-50%, -50%);
+  mix-blend-mode: screen;
+  transition: opacity 0.4s $ease-soft;
+  opacity: 0;
+
+  &.is-active {
+    opacity: 1;
+  }
+
+  @media (max-width: 1024px) {
+    display: none;
+  }
+}
+
+.coffee-atmosphere {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at 30% 20%,
+      var(--accent-glow, transparent),
+      transparent 55%
+    );
+    opacity: 0.55;
+  }
+}
+
+.tilt-card {
+  transform-style: preserve-3d;
+}
