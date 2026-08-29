@@ -7,10 +7,10 @@
       <h1
         class="mt-5 font-display text-4xl md:text-6xl lg:text-7xl font-semibold tracking-tight leading-[0.95] max-w-4xl"
       >
-        Напишите нам
+        {{ $t('contacts.title') }}
       </h1>
       <p class="mt-8 max-w-xl font-serif text-xl md:text-2xl text-bone/65 leading-relaxed">
-        Вопросы о сортах, доставке и обжарке — ответим лично.
+        {{ $t('contacts.lead') }}
       </p>
     </section>
 
@@ -22,22 +22,30 @@
 
         <div class="lg:col-span-5 flex flex-col gap-12 md:gap-16">
           <div>
-            <p class="text-[10px] tracking-[0.24em] uppercase text-bone/40 mb-4">адрес</p>
+            <p class="text-[10px] tracking-[0.24em] uppercase text-bone/40 mb-4">
+              {{ $t('contacts.address') }}
+            </p>
             <p class="font-serif text-xl md:text-2xl text-bone/85 leading-snug">
               {{ $t('footer.address') }}
             </p>
           </div>
 
           <div>
-            <p class="text-[10px] tracking-[0.24em] uppercase text-bone/40 mb-4">часы</p>
-            <p class="font-serif text-2xl md:text-3xl text-bone/85">пн–пт</p>
-            <p class="mt-3 text-bone/50 leading-relaxed">10:00–19:00 (МСК)</p>
+            <p class="text-[10px] tracking-[0.24em] uppercase text-bone/40 mb-4">
+              {{ $t('contacts.hours') }}
+            </p>
+            <p class="font-serif text-2xl md:text-3xl text-bone/85">
+              {{ $t('contacts.hoursWeekdays') }}
+            </p>
+            <p class="mt-3 text-bone/50 leading-relaxed">{{ $t('contacts.hoursTime') }}</p>
           </div>
         </div>
       </div>
 
       <div class="mt-12 md:mt-16">
-        <p class="text-[10px] tracking-[0.24em] uppercase text-bone/40 mb-4">карта</p>
+        <p class="text-[10px] tracking-[0.24em] uppercase text-bone/40 mb-4">
+          {{ $t('contacts.map') }}
+        </p>
         <ContactsMap />
       </div>
     </section>
@@ -45,9 +53,11 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
+
 useSeoPage({
-  title: 'контакты',
-  description: 'Свяжитесь с coffee cherry — форма обратной связи, адрес и часы работы.',
+  title: t('contacts.seo.title'),
+  description: t('contacts.seo.description'),
   path: '/contacts',
 })
 </script>

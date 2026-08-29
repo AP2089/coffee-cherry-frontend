@@ -23,14 +23,16 @@
               0{{ index + 1 }}
             </p>
             <p class="mt-6 text-[10px] tracking-[0.22em] uppercase text-bone/60">
-              {{ coffee.country }}
+              {{ localizeCoffee(coffee).country }}
             </p>
             <h3 class="font-display text-3xl md:text-4xl mt-2 tracking-tight">
               {{ formatCoffeeName(coffee.name) }}
             </h3>
-            <p class="mt-6 text-bone/55 leading-relaxed">{{ capitalizeFirst(coffee.story) }}</p>
+            <p class="mt-6 text-bone/55 leading-relaxed">
+              {{ capitalizeFirst(localizeCoffee(coffee).story) }}
+            </p>
             <p class="mt-5 text-sm text-bone/50 leading-snug">
-              {{ capitalizeFirst(coffee.description) }}
+              {{ capitalizeFirst(localizeCoffee(coffee).description) }}
             </p>
             <p
               class="mt-3 text-[10px] tracking-[0.18em] uppercase"
@@ -40,10 +42,10 @@
             </p>
             <p class="mt-6 font-serif text-2xl md:text-3xl">{{ formatPrice(coffee.price) }}</p>
             <NuxtLink
-              :to="`/coffee/${coffee.slug}`"
+              :to="localePath(`/coffee/${coffee.slug}`)"
               class="magnetic-btn mt-8 px-6 py-3 text-xs inline-flex"
             >
-              Открыть
+              {{ $t('coffee.open') }}
             </NuxtLink>
           </div>
         </div>
@@ -58,6 +60,7 @@ import type { Coffee } from '~/types'
 defineProps<{ coffees: Coffee[] }>()
 
 const { t } = useI18n()
+const localePath = useLocalePath()
 const { observe } = useReveal()
 
 function accentOf(slug: Coffee['slug']) {

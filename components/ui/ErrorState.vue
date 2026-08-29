@@ -4,7 +4,7 @@
     <p class="mt-4 text-bone/50 leading-relaxed">{{ descriptionText }}</p>
     <NuxtLink
       v-if="actionTo"
-      :to="actionTo"
+      :to="resolvedActionTo"
       class="magnetic-btn inline-flex mt-10 px-6 py-3 text-xs"
     >
       {{ actionLabelText }}
@@ -29,8 +29,17 @@ const props = withDefaults(
 )
 
 const { t } = useI18n()
+const localePath = useLocalePath()
 
 const titleText = computed(() => props.title ?? t('error.default.title'))
 const descriptionText = computed(() => props.description ?? t('error.default.description'))
 const actionLabelText = computed(() => props.actionLabel ?? t('error.home'))
+
+const resolvedActionTo = computed(() => {
+  if (props.actionTo === '/#collection') {
+    return { path: localePath('/'), hash: '#collection' }
+  }
+
+  return localePath(props.actionTo)
+})
 </script>

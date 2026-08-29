@@ -6,7 +6,10 @@
     <div
       class="mx-auto max-w-content px-5 md:px-8 lg:px-12 h-16 md:h-20 flex items-center justify-between"
     >
-      <NuxtLink to="/" class="font-display text-xl md:text-2xl tracking-tight font-bold">
+      <NuxtLink
+        :to="localePath('/')"
+        class="font-display text-xl md:text-2xl tracking-tight font-bold"
+      >
         {{ $t('brand.name.short') }}
         <span class="text-bronze">
           {{ ' ' + $t('brand.lab') }}
@@ -17,19 +20,28 @@
         <nav
           class="hidden md:flex items-center gap-8 md:gap-10 text-sm tracking-[0.18em] uppercase text-bone/70"
         >
-          <a href="/#collection" class="hover:text-bone transition-colors duration-300">
+          <NuxtLink
+            :to="{ path: localePath('/'), hash: '#collection' }"
+            class="hover:text-bone transition-colors duration-300"
+          >
             {{ $t('nav.collection') }}
-          </a>
-          <NuxtLink to="/story" class="hover:text-bone transition-colors duration-300">
+          </NuxtLink>
+          <NuxtLink
+            :to="localePath('/story')"
+            class="hover:text-bone transition-colors duration-300"
+          >
             {{ $t('nav.story') }}
           </NuxtLink>
-          <NuxtLink to="/contacts" class="hover:text-bone transition-colors duration-300">
+          <NuxtLink
+            :to="localePath('/contacts')"
+            class="hover:text-bone transition-colors duration-300"
+          >
             {{ $t('footer.visit') }}
           </NuxtLink>
         </nav>
 
         <NuxtLink
-          to="/cart"
+          :to="localePath('/cart')"
           class="relative flex items-center gap-2 text-sm tracking-[0.14em] uppercase text-bone/80 hover:text-bone transition-colors"
           :aria-label="$t('nav.open.cart')"
         >
@@ -41,15 +53,31 @@
           </span>
         </NuxtLink>
 
+        <div
+          class="hidden md:flex items-center rounded-full border border-bone/20 bg-bone/5 p-0.5 text-xs tracking-[0.14em] uppercase"
+        >
+          <NuxtLink
+            v-for="item in locales"
+            :key="item.code"
+            :to="switchLocalePath(item.code)"
+            class="rounded-full px-2.5 py-1 transition-colors"
+            :class="
+              locale === item.code ? 'bg-bone/15 text-bone' : 'text-bone/45 hover:text-bone/75'
+            "
+          >
+            {{ item.code }}
+          </NuxtLink>
+        </div>
+
         <button
           type="button"
           class="md:hidden flex h-10 w-10 items-center justify-center text-bone/80 hover:text-bone transition-colors"
           :aria-expanded="menuOpen"
           aria-controls="mobile-nav"
-          aria-label="Меню"
+          :aria-label="$t('nav.menu')"
           @click="toggleMenu"
         >
-          <span class="sr-only">Меню</span>
+          <span class="sr-only">{{ $t('nav.menu') }}</span>
           <svg
             v-if="!menuOpen"
             class="h-5 w-5"
@@ -90,27 +118,45 @@
         class="md:hidden border-t border-bone/10 bg-ink/95 backdrop-blur-md"
       >
         <div class="mx-auto max-w-content px-5 py-6 flex flex-col gap-1">
-          <a
-            href="/#collection"
+          <NuxtLink
+            :to="{ path: localePath('/'), hash: '#collection' }"
             class="px-2 py-4 text-sm tracking-[0.18em] uppercase text-bone/70 hover:text-bone transition-colors border-b border-bone/10"
             @click="closeMenu"
           >
             {{ $t('nav.collection') }}
-          </a>
+          </NuxtLink>
           <NuxtLink
-            to="/story"
+            :to="localePath('/story')"
             class="px-2 py-4 text-sm tracking-[0.18em] uppercase text-bone/70 hover:text-bone transition-colors border-b border-bone/10"
             @click="closeMenu"
           >
             {{ $t('nav.story') }}
           </NuxtLink>
           <NuxtLink
-            to="/contacts"
-            class="px-2 py-4 text-sm tracking-[0.18em] uppercase text-bone/70 hover:text-bone transition-colors"
+            :to="localePath('/contacts')"
+            class="px-2 py-4 text-sm tracking-[0.18em] uppercase text-bone/70 hover:text-bone transition-colors border-b border-bone/10"
             @click="closeMenu"
           >
             {{ $t('footer.visit') }}
           </NuxtLink>
+          <div class="flex items-center justify-end px-2 py-4">
+            <div
+              class="inline-flex items-center rounded-full border border-bone/20 bg-bone/5 p-0.5 text-sm tracking-[0.14em] uppercase"
+            >
+              <NuxtLink
+                v-for="item in locales"
+                :key="item.code"
+                :to="switchLocalePath(item.code)"
+                class="rounded-full px-3 py-1.5 transition-colors"
+                :class="
+                  locale === item.code ? 'bg-bone/15 text-bone' : 'text-bone/45 hover:text-bone/75'
+                "
+                @click="closeMenu"
+              >
+                {{ item.code }}
+              </NuxtLink>
+            </div>
+          </div>
         </div>
       </nav>
     </Transition>
@@ -120,6 +166,9 @@
 <script setup lang="ts">
 const cart = useCartStore()
 const route = useRoute()
+const { locale, locales } = useI18n()
+const switchLocalePath = useSwitchLocalePath()
+const localePath = useLocalePath()
 const scrolled = ref(false)
 const menuOpen = ref(false)
 

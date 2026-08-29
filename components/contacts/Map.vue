@@ -7,16 +7,17 @@
       class="absolute inset-0 h-full w-full border-0"
       loading="lazy"
       allowfullscreen
-      title="Яндекс Карта"
+      :title="$t('contacts.mapTitle')"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const mapSrc = computed(() => {
   const query = encodeURIComponent(t('footer.address'))
-  return `https://yandex.ru/map-widget/v1/?text=${query}&z=17&lang=ru_RU`
+  const mapLang = locale.value === 'en' ? 'en_US' : 'ru_RU'
+  return `https://yandex.ru/map-widget/v1/?text=${query}&z=17&lang=${mapLang}`
 })
 </script>

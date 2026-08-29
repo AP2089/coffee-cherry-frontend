@@ -24,13 +24,24 @@ export default defineNuxtConfig({
         name: 'Русский',
         file: 'ru.json',
       },
+      {
+        code: 'en',
+        language: 'en-US',
+        name: 'English',
+        file: 'en.json',
+      },
     ],
     defaultLocale: 'ru',
     lazy: true,
     langDir: 'locales',
-    strategy: 'no_prefix',
+    strategy: 'prefix_except_default',
     vueI18n: 'i18n.config.ts',
-    detectBrowserLanguage: false,
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_locale',
+      fallbackLocale: 'ru',
+      redirectOn: 'root',
+    },
   },
 
   css: ['~/assets/scss/main.scss'],
@@ -47,7 +58,6 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      htmlAttrs: { lang: 'ru' },
       title: 'coffee cherry',
       meta: [
         { charset: 'utf-8' },

@@ -4,7 +4,7 @@
     class="scroll-top fixed bottom-6 right-5 md:bottom-8 md:right-8 z-40 flex h-11 w-11 items-center justify-center border border-bone/25 bg-ink/80 text-bone/70 backdrop-blur-md hover:border-bronze hover:text-bronze"
     :class="{ 'is-interactive': progress > 0.85 }"
     :style="buttonStyle"
-    aria-label="Наверх"
+    :aria-label="$t('common.scrollTop')"
     :tabindex="progress > 0.2 ? 0 : -1"
     @click="scrollToTop"
   >

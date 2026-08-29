@@ -17,7 +17,7 @@
         class="hero__tag text-[10px] md:text-xs tracking-[0.38em] uppercase text-bronze"
         :class="{ 'is-in': ready }"
       >
-        особенный · лимитировано · осознанно
+        {{ $t('home.hero.tag') }}
       </p>
 
       <h1 class="mt-6 md:mt-8 font-display font-bold tracking-[-0.04em] leading-[0.82]">

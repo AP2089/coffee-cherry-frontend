@@ -31,7 +31,7 @@
               {{ $t('cart.items.count', { count: cart.getItemsCount }) }}
             </p>
             <NuxtLink
-              to="/checkout"
+              :to="localePath('/checkout')"
               class="magnetic-btn magnetic-btn--filled w-full mt-8 px-6 py-4 text-xs inline-flex justify-center"
             >
               {{ $t('cart.checkout') }}
@@ -53,6 +53,7 @@
 <script setup lang="ts">
 const cart = useCartStore()
 const { t } = useI18n()
+const localePath = useLocalePath()
 
 useSeoPage({
   title: t('cart.seo.title'),

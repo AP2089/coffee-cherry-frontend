@@ -37,7 +37,7 @@
               class="flex justify-between gap-4"
             >
               <div>
-                <p class="capitalize font-display">{{ item.name }}</p>
+                <p class="font-display">{{ formatCoffeeName(item.name) }}</p>
                 <p class="text-sm text-bone/45 mt-1">
                   {{
                     $t('order.success.item.meta', { weight: item.weight, quantity: item.quantity })
@@ -77,7 +77,7 @@
           </div>
         </div>
 
-        <NuxtLink to="/" class="magnetic-btn inline-flex mt-12 px-8 py-4 text-xs">
+        <NuxtLink :to="localePath('/')" class="magnetic-btn inline-flex mt-12 px-8 py-4 text-xs">
           {{ $t('order.success.back.home') }}
         </NuxtLink>
       </template>
@@ -91,6 +91,7 @@ import type { OrderStatus } from '~/types'
 
 const route = useRoute()
 const { t, te } = useI18n()
+const localePath = useLocalePath()
 const id = computed(() => String(route.query.id || ''))
 
 const {

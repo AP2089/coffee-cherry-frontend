@@ -17,6 +17,16 @@
 </template>
 
 <script setup lang="ts">
+const { locale } = useI18n()
+
+useHead(
+  computed(() => ({
+    htmlAttrs: {
+      lang: locale.value === 'en' ? 'en' : 'ru',
+    },
+  })),
+)
+
 const cart = useCartStore()
 const glowX = ref(0)
 const glowY = ref(0)

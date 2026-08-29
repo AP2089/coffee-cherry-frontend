@@ -30,10 +30,10 @@
               :key="`${item.slug}-${item.weight}`"
               class="flex justify-between gap-4 text-sm"
             >
-              <span class="text-bone/70 capitalize">
+              <span class="text-bone/70">
                 {{
                   $t('checkout.item.line', {
-                    name: item.name,
+                    name: formatCoffeeName(item.name),
                     weight: item.weight,
                     quantity: item.quantity,
                   })
@@ -61,6 +61,7 @@ import { orderService } from '~/services/order.service'
 
 const cart = useCartStore()
 const { t } = useI18n()
+const localePath = useLocalePath()
 const loading = ref(false)
 const errorMessage = ref('')
 
@@ -87,7 +88,7 @@ async function submitOrder(customer: Customer) {
     })
 
     cart.clearCart()
-    await navigateTo(`/order-success?id=${order._id}`)
+    await navigateTo(localePath(`/order-success?id=${order._id}`))
   } catch (err: unknown) {
     const message =
       err && typeof err === 'object' && 'data' in err

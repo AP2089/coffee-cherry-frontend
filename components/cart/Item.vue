@@ -6,9 +6,9 @@
     <div class="flex-1 min-w-0">
       <div class="flex justify-between gap-3">
         <div>
-          <p class="font-display capitalize tracking-tight">{{ item.name }}</p>
+          <p class="font-display tracking-tight">{{ formatCoffeeName(item.name) }}</p>
           <p class="text-xs text-bone/45 mt-1">
-            {{ $t('cart.item.meta', { country: item.country, weight: item.weight }) }}
+            {{ $t('cart.item.meta', { country: displayItem.country, weight: item.weight }) }}
           </p>
         </div>
         <p class="font-serif text-lg shrink-0">{{ formatPrice(item.price * item.quantity) }}</p>
@@ -51,6 +51,8 @@ import type { CartItem } from '~/types'
 
 const props = defineProps<{ item: CartItem }>()
 const cart = useCartStore()
+
+const displayItem = computed(() => localizeCartItem(props.item))
 
 const imageSrc = computed(() => {
   if (props.item.image && /\.(jpe?g|png|webp)$/i.test(props.item.image)) {

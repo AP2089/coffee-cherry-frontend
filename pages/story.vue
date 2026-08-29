@@ -7,7 +7,7 @@
       <h1
         class="mt-5 font-display text-4xl md:text-6xl lg:text-7xl font-semibold tracking-tight leading-[0.95] max-w-4xl"
       >
-        Коллекция особенного кофе
+        {{ $t('story.title') }}
       </h1>
     </section>
 
@@ -26,21 +26,15 @@
       <div class="grid lg:grid-cols-12 gap-10 lg:gap-16">
         <div class="lg:col-span-4">
           <p class="font-serif text-2xl md:text-3xl text-bone/80 leading-snug">
-            Лаборатория вкуса с ограниченным ассортиментом.
+            {{ $t('story.lead') }}
           </p>
         </div>
         <div
           class="lg:col-span-7 lg:col-start-6 space-y-8 text-bone/65 text-lg md:text-xl leading-relaxed font-serif"
         >
-          <p>
-            coffee cherry — это лаборатория вкуса. Каждый сорт выбран за историю происхождения,
-            ясность профиля и способность говорить сам за себя.
-          </p>
+          <p>{{ $t('story.p1') }}</p>
           <p>{{ $t('story.p2') }}</p>
-          <p>
-            Ограниченный ассортимент — не ограничение выбора, а фокус. Честная обжарка и характеры,
-            в которые мы верим.
-          </p>
+          <p>{{ $t('story.p3') }}</p>
         </div>
       </div>
     </section>

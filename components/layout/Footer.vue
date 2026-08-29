@@ -8,7 +8,7 @@
           {{ $t('brand.name.full') }}
         </p>
         <p class="mt-4 max-w-sm text-bone/55 leading-relaxed">
-          Ограниченный ассортимент особой обжарки.
+          {{ $t('footer.tagline') }}
         </p>
       </div>
 
@@ -18,7 +18,10 @@
         </p>
         <ul class="space-y-2 text-bone/70">
           <li v-for="slug in slugs" :key="slug">
-            <NuxtLink :to="`/coffee/${slug}`" class="hover:text-bone transition-colors capitalize">
+            <NuxtLink
+              :to="localePath(`/coffee/${slug}`)"
+              class="hover:text-bone transition-colors capitalize"
+            >
               {{ slug }}
             </NuxtLink>
           </li>
@@ -31,7 +34,7 @@
         </p>
         <p class="text-bone/70 leading-relaxed">
           {{ $t('footer.address') }}<br />
-          <NuxtLink to="/contacts" class="hover:text-bone transition-colors">
+          <NuxtLink :to="localePath('/contacts')" class="hover:text-bone transition-colors">
             {{ $t('footer.email') }}
           </NuxtLink>
         </p>
@@ -47,6 +50,7 @@
 </template>
 
 <script setup lang="ts">
+const localePath = useLocalePath()
 const slugs = ['bloom', 'velvet', 'santos', 'noir', 'ember'] as const
 const year = new Date().getFullYear()
 </script>
