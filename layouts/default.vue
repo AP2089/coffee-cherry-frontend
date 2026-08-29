@@ -13,6 +13,9 @@
     </main>
     <LayoutFooter />
     <UiScrollTop />
+    <ClientOnly>
+      <SupportChatWidget />
+    </ClientOnly>
   </div>
 </template>
 

@@ -53,6 +53,7 @@ export default defineNuxtConfig({
     public: {
       // Browser: http://localhost:3001/api
       apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:3001/api',
+      socketUrl: process.env.NUXT_PUBLIC_SOCKET_URL || 'http://localhost:3001',
     },
   },
 

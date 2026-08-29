@@ -318,5 +318,27 @@
   "common": {
     "grams": "{weight} g",
     "scrollTop": "Back to top"
+  },
+  "support": {
+    "label": "support",
+    "title": "Support chat",
+    "intro": "Enter your name and email so we can reply to you.",
+    "open": "Open chat",
+    "close": "Close chat",
+    "start": "Start chat",
+    "send": "Send",
+    "placeholder": "Type a message…",
+    "connecting": "Connecting…",
+    "online": "Online",
+    "offline": "Offline",
+    "connectionError": "Could not connect to chat. Please try again later.",
+    "fields": {
+      "name": "name",
+      "email": "email"
+    },
+    "errors": {
+      "name": "Enter your name",
+      "email": "Invalid email"
+    }
   }
 }
