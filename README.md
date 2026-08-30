@@ -25,29 +25,23 @@ SSR ходит в API через `host.docker.internal:3001`.
 Нужен запущенный backend и Node.js ≥ 20.
 
 ```bash
-cp .env.example .env
-# для локального dev можно:
-# NUXT_API_URL=http://localhost:3001/api
 npm install
 npm run dev
 ```
 
 ## Переменные окружения
 
-| Переменная            | Описание                                          |
-| --------------------- | ------------------------------------------------- |
-| `NUXT_PUBLIC_API_URL` | URL API для браузера                              |
-| `NUXT_API_URL`        | URL API для SSR (в Docker — host.docker.internal) |
+Файл `.env` в корне проекта.
+
+| Переменная               | Описание                                                                           |
+| ------------------------ | ---------------------------------------------------------------------------------- |
+| `NUXT_PUBLIC_API_URL`    | URL REST API для браузера (заказы, каталог, авторизация)                           |
+| `NUXT_PUBLIC_SOCKET_URL` | URL Socket.IO для чата поддержки в реальном времени                                |
+| `NUXT_PUBLIC_SITE_URL`   | Публичный URL сайта (canonical, OG-теги, ссылки в письмах)                         |
+| `NUXT_API_URL`           | URL API для SSR на сервере Nuxt. В Docker — `http://host.docker.internal:3001/api` |
 
 ## Scripts
 
 - `npm run dev` — разработка
 - `npm run build` — production-сборка
 - `npm run preview` — превью сборки
-
-## Страницы
-
-- `/` — главная, коллекция
-- `/coffee/[slug]` — карточка сорта
-- `/cart`, `/checkout`, `/order-success` — корзина и заказ
-- `/story`, `/contacts` — о проекте и контакты
