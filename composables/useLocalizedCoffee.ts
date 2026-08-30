@@ -1,42 +1,7 @@
 import type { Coffee, CartItem } from '~/types'
 
-function getFlavorNotes(prefix: string, fallback: string[]): string[] {
-  const { t, te } = useI18n()
-  const notes: string[] = []
-
-  for (let i = 0; i < fallback.length; i++) {
-    const key = `${prefix}.flavorNotes.${i}`
-    if (!te(key)) break
-    notes.push(t(key))
-  }
-
-  return notes.length ? notes : fallback
-}
-
 export function localizeCoffee(coffee: Coffee): Coffee {
-  const { locale, t, te } = useI18n()
-
-  if (locale.value === 'ru') {
-    return coffee
-  }
-
-  const prefix = `coffees.${coffee.slug}`
-
-  if (!te(`${prefix}.description`)) {
-    return coffee
-  }
-
-  return {
-    ...coffee,
-    country: t(`${prefix}.country`),
-    region: t(`${prefix}.region`),
-    variety: te(`${prefix}.variety`) ? t(`${prefix}.variety`) : coffee.variety,
-    process: t(`${prefix}.process`),
-    altitude: te(`${prefix}.altitude`) ? t(`${prefix}.altitude`) : coffee.altitude,
-    description: t(`${prefix}.description`),
-    story: t(`${prefix}.story`),
-    flavorNotes: getFlavorNotes(prefix, coffee.flavorNotes),
-  }
+  return coffee
 }
 
 export function localizeCartItem(item: CartItem): CartItem {

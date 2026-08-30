@@ -109,7 +109,7 @@ import { coffeeService } from '~/services/coffee.service'
 
 const route = useRoute()
 const cart = useCartStore()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const slug = computed(() => String(route.params.slug || ''))
 
 const {
@@ -117,7 +117,7 @@ const {
   pending,
   error,
 } = await useAsyncData(`coffee-${slug.value}`, () => coffeeService.getBySlug(slug.value), {
-  watch: [slug],
+  watch: [slug, locale],
 })
 
 const localizedCoffee = useLocalizedCoffee(coffee)

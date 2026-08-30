@@ -34,9 +34,13 @@ useSeoPage({
   path: '/',
 })
 
+const { locale } = useI18n()
+
 const {
   data: coffees,
   pending,
   error,
-} = await useAsyncData('coffees', () => coffeeService.getAll())
+} = await useAsyncData('coffees', () => coffeeService.getAll(), {
+  watch: [locale],
+})
 </script>
