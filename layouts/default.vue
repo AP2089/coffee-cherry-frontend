@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-ink text-bone font-sans relative">
+  <div class="min-h-screen bg-background text-foreground font-sans relative">
     <div class="grain" aria-hidden="true" />
     <div
       class="cursor-glow"
@@ -12,8 +12,9 @@
       <slot />
     </main>
     <LayoutFooter />
-    <UiScrollTop />
+    <AppScrollTop />
     <ClientOnly>
+      <AppCookieBanner />
       <SupportChatWidget />
     </ClientOnly>
   </div>

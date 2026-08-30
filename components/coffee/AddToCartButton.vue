@@ -1,13 +1,13 @@
 <template>
-  <button
+  <Button
     type="button"
-    class="magnetic-btn magnetic-btn--filled px-8 py-4 text-xs w-full sm:w-auto"
+    variant="magnetic-filled"
+    class="w-full sm:w-auto px-8 py-4"
     :disabled="disabled || loading"
-    :class="{ 'opacity-50 pointer-events-none': disabled || loading }"
     @click="$emit('add')"
   >
     {{ loading ? $t('coffee.adding') : label || $t('coffee.add.to.cart') }}
-  </button>
+  </Button>
 </template>
 
 <script setup lang="ts">

@@ -1,12 +1,12 @@
 <template>
   <NuxtLink
     :to="localePath(`/coffee/${coffee.slug}`)"
-    class="coffee-card group relative mx-auto block w-full max-w-full overflow-hidden bg-ink-mute aspect-[3/4] max-h-[calc(100dvh-4rem)] md:max-h-[calc(100dvh-5rem)]"
+    class="coffee-card group absolute inset-0 overflow-hidden bg-ink-mute"
   >
     <img
       :src="coffee.image"
       :alt="formatCoffeeName(coffee.name)"
-      class="absolute inset-0 w-full h-full object-cover"
+      class="size-full object-cover object-center"
       loading="lazy"
     />
   </NuxtLink>
@@ -18,3 +18,11 @@ import type { Coffee } from '~/types'
 defineProps<{ coffee: Coffee }>()
 const localePath = useLocalePath()
 </script>
+
+<style scoped lang="scss">
+.coffee-card img {
+  display: block;
+  min-height: 100%;
+  min-width: 100%;
+}
+</style>

@@ -7,7 +7,7 @@
       <img
         :src="coffee.image"
         :alt="coffee.name"
-        class="absolute inset-0 w-full h-full object-cover"
+        class="absolute inset-0 size-full object-cover object-center"
       />
       <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/30" />
       <div

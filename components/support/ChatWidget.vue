@@ -10,30 +10,32 @@
       leave-from-class="opacity-100 translate-y-0 scale-100"
       leave-to-class="opacity-0 translate-y-3 scale-95"
     >
-      <div
+      <Card
         v-if="chat.isOpen"
-        class="support-chat__panel mb-3 flex flex-col overflow-hidden border border-bone/15 bg-ink/95 backdrop-blur-md shadow-[0_24px_80px_rgba(0,0,0,0.45)]"
+        class="support-chat__panel mb-3 flex flex-col overflow-hidden border-border bg-background/95 backdrop-blur-md shadow-[0_24px_80px_rgba(0,0,0,0.45)]"
         role="dialog"
         aria-modal="true"
         :aria-label="$t('support.title')"
       >
-        <header
-          class="support-chat__header shrink-0 flex items-start gap-3 border-b border-bone/10 px-4 py-3"
+        <CardHeader
+          class="shrink-0 flex-row items-start gap-3 space-y-0 border-b border-border px-4 py-3"
         >
           <div class="flex min-w-0 flex-1 items-start gap-2">
-            <div class="min-w-0">
-              <p class="font-display text-lg tracking-tight">{{ $t('support.title') }}</p>
-            </div>
+            <CardTitle class="font-display text-lg tracking-tight">{{
+              $t('support.title')
+            }}</CardTitle>
             <span
               v-if="chat.profileReady"
               class="mt-1.5 inline-flex h-2 w-2 shrink-0 rounded-full"
-              :class="chat.isConnected ? 'bg-emerald-400/90' : 'bg-ember/80'"
+              :class="chat.isConnected ? 'bg-success' : 'bg-destructive/80'"
               :title="chat.isConnected ? $t('support.online') : $t('support.offline')"
             />
           </div>
-          <button
+          <Button
             type="button"
-            class="support-chat__close ml-auto shrink-0 flex h-8 w-8 items-center justify-center text-bone/50 hover:text-bone transition-colors"
+            variant="ghost"
+            size="icon-sm"
+            class="ml-auto shrink-0 cursor-pointer text-muted-foreground hover:text-foreground"
             :aria-label="$t('support.close')"
             @click="chat.close()"
           >
@@ -46,8 +48,8 @@
             >
               <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
             </svg>
-          </button>
-        </header>
+          </Button>
+        </CardHeader>
 
         <SupportProfileForm
           v-if="!chat.profileReady"
@@ -59,7 +61,7 @@
           <div class="flex min-h-0 flex-1 flex-col overflow-hidden">
             <div
               v-if="chat.guestName"
-              class="shrink-0 border-b border-bone/10 px-4 py-2 text-xs text-bone/45"
+              class="shrink-0 border-b border-border px-4 py-2 text-xs text-muted-foreground"
             >
               {{ chat.guestName }} · {{ chat.guestEmail }}
             </div>
@@ -69,15 +71,20 @@
               class="support-chat__messages min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4"
               @scroll="messagesScroll.onScroll"
             >
-              <p v-if="chat.loadingMoreMessages" class="text-center text-xs text-bone/40">…</p>
+              <p v-if="chat.loadingMoreMessages" class="text-center text-xs text-muted-foreground">
+                …
+              </p>
 
-              <p v-if="chat.isConnecting && !chat.messages.length" class="text-sm text-bone/45">
+              <p
+                v-if="chat.isConnecting && !chat.messages.length"
+                class="text-sm text-muted-foreground"
+              >
                 {{ $t('support.connecting') }}
               </p>
 
-              <p v-else-if="chat.error === 'connection'" class="text-sm text-ember">
-                {{ $t('support.connectionError') }}
-              </p>
+              <Alert v-else-if="chat.error === 'connection'" variant="destructive">
+                <AlertDescription>{{ $t('support.connectionError') }}</AlertDescription>
+              </Alert>
 
               <article
                 v-for="message in chat.messages"
@@ -86,34 +93,41 @@
                 :class="message.sender === 'user' ? 'justify-end' : 'justify-start'"
               >
                 <div
-                  class="max-w-[85%] px-3 py-2 text-sm leading-relaxed"
+                  class="max-w-[85%] px-3 py-2 text-sm leading-relaxed border"
                   :class="
                     message.sender === 'user'
-                      ? 'bg-bronze/20 text-bone border border-bronze/25'
-                      : 'bg-bone/5 text-bone/80 border border-bone/10'
+                      ? 'bg-primary/20 text-foreground border-primary/25'
+                      : 'bg-muted text-foreground/80 border-border'
                   "
                 >
+                  <p
+                    class="mb-1 text-[10px] font-medium tracking-[0.08em] uppercase"
+                    :class="message.sender === 'user' ? 'text-primary/70' : 'text-muted-foreground'"
+                  >
+                    {{ senderLabel(message.sender) }}
+                  </p>
                   <p class="whitespace-pre-wrap break-words">{{ message.text }}</p>
-                  <p class="mt-1 text-[10px] tracking-[0.08em] uppercase text-bone/35">
+                  <p class="mt-1 text-[10px] tracking-[0.08em] uppercase text-muted-foreground">
                     {{ formatTime(message.createdAt) }}
                   </p>
                 </div>
               </article>
             </div>
 
-            <form class="shrink-0 border-t border-bone/10 p-3" @submit.prevent="submit">
+            <form class="shrink-0 border-t border-border p-3" @submit.prevent="submit">
               <div class="flex items-stretch gap-2">
-                <textarea
+                <Textarea
                   v-model="draft"
                   rows="2"
-                  class="support-chat__textarea min-h-[44px] max-h-28 flex-1 resize-none bg-transparent px-3 py-2 text-sm text-bone outline-none placeholder:text-bone/35"
+                  class="min-h-[44px] max-h-28 flex-1 resize-none bg-transparent"
                   :placeholder="$t('support.placeholder')"
                   :disabled="!chat.isConnected"
                   @keydown.enter.exact.prevent="submit"
                 />
-                <button
+                <Button
                   type="submit"
-                  class="support-chat__send magnetic-btn magnetic-btn--filled shrink-0 flex w-11 items-center justify-center"
+                  variant="magnetic-filled"
+                  class="h-auto w-11 shrink-0 self-stretch p-0"
                   :disabled="!canSend"
                   :aria-label="$t('support.send')"
                 >
@@ -131,17 +145,19 @@
                       d="M5 12l14-7-7 14-2-5-5-2z"
                     />
                   </svg>
-                </button>
+                </Button>
               </div>
             </form>
           </div>
         </template>
-      </div>
+      </Card>
     </Transition>
 
-    <button
+    <Button
       type="button"
-      class="support-chat__toggle relative flex h-12 w-12 items-center justify-center border border-bone/25 bg-ink/85 text-bone/80 backdrop-blur-md hover:border-bronze hover:text-bronze transition-colors"
+      variant="outline"
+      size="icon-lg"
+      class="support-chat__toggle relative cursor-pointer border-border bg-background/85 text-muted-foreground backdrop-blur-md hover:border-primary hover:text-primary"
       :aria-label="chat.isOpen ? $t('support.close') : $t('support.open')"
       @click="chat.toggle()"
     >
@@ -170,19 +186,16 @@
         <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
       </svg>
 
-      <span
-        v-if="chat.unreadCount > 0"
-        class="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-bronze px-1 text-[10px] font-semibold text-ink"
-      >
+      <Badge v-if="chat.unreadCount > 0" variant="unread">
         {{ chat.unreadCount }}
-      </span>
-    </button>
+      </Badge>
+    </Button>
   </div>
 </template>
 
 <script setup lang="ts">
 const chat = useSupportChatStore()
-const { locale } = useI18n()
+const { locale, t } = useI18n()
 const draft = ref('')
 const messagesEl = ref<HTMLElement | null>(null)
 const profileFormRef = ref<{ reset: () => void } | null>(null)
@@ -194,6 +207,14 @@ function formatTime(value: string) {
     hour: '2-digit',
     minute: '2-digit',
   }).format(new Date(value))
+}
+
+function senderLabel(sender: string) {
+  if (sender === 'user') {
+    return locale.value === 'en' ? 'You' : 'Вы'
+  }
+
+  return t('support.label')
 }
 
 function scrollToBottom() {
@@ -295,43 +316,14 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
-@use '../../assets/scss/variables' as *;
-
 .support-chat__panel {
   width: min(calc(100vw - 2.5rem), 22rem);
   height: min(80dvh, 34rem);
 }
 
-.support-chat__close {
-  transition:
-    border-color 0.3s $ease-premium,
-    color 0.3s $ease-premium;
-}
-
-.support-chat__start {
-  letter-spacing: 0.12em;
-}
-
 .support-chat__messages {
   scrollbar-width: thin;
-  scrollbar-color: rgba(237, 232, 223, 0.18) transparent;
-}
-
-.support-chat__textarea {
-  border: 1px solid rgba($bone, 0.12);
-
-  &:focus {
-    border-color: rgba($bronze, 0.45);
-  }
-}
-
-.support-chat__send {
-  padding: 0;
-
-  &:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-  }
+  scrollbar-color: color-mix(in srgb, var(--foreground) 18%, transparent) transparent;
 }
 
 .support-chat__toggle,

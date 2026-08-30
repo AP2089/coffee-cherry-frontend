@@ -7,7 +7,7 @@
       >
         <div
           :ref="(el) => setReveal(el)"
-          class="lg:col-span-7 reveal reveal-media"
+          class="coffee-grid__media relative w-full lg:col-span-7 reveal reveal-media h-[calc(100dvh-4rem)] md:h-[calc(100dvh-5rem)]"
           :class="`reveal-delay-${(index % 4) + 1}`"
         >
           <CoffeeCard :coffee="coffee" />
@@ -38,12 +38,11 @@
               {{ moodOf(coffee.slug) }}
             </p>
             <p class="mt-6 font-serif text-2xl md:text-3xl">{{ formatPrice(coffee.price) }}</p>
-            <NuxtLink
-              :to="localePath(`/coffee/${coffee.slug}`)"
-              class="magnetic-btn mt-8 px-6 py-3 text-xs inline-flex"
-            >
-              {{ $t('coffee.open') }}
-            </NuxtLink>
+            <Button variant="magnetic" class="mt-8 px-6 py-3" as-child>
+              <NuxtLink :to="localePath(`/coffee/${coffee.slug}`)">
+                {{ $t('coffee.open') }}
+              </NuxtLink>
+            </Button>
           </div>
         </div>
       </div>

@@ -1,7 +1,9 @@
 <template>
-  <button
+  <Button
     type="button"
-    class="scroll-top fixed bottom-[82px] right-5 md:bottom-[90px] md:right-8 z-40 flex h-12 w-12 items-center justify-center border border-bone/25 bg-ink/80 text-bone/70 backdrop-blur-md hover:border-bronze hover:text-bronze"
+    variant="outline"
+    size="icon"
+    class="scroll-top fixed bottom-[82px] right-5 md:bottom-[90px] md:right-8 z-40 size-12 cursor-pointer border-border bg-background/80 text-muted-foreground backdrop-blur-md hover:border-primary hover:text-primary"
     :class="{ 'is-interactive': progress > 0.85 }"
     :style="buttonStyle"
     :aria-label="$t('common.scrollTop')"
@@ -9,7 +11,7 @@
     @click="scrollToTop"
   >
     <span class="scroll-top__chevron" aria-hidden="true" />
-  </button>
+  </Button>
 </template>
 
 <script setup lang="ts">

@@ -1,7 +1,7 @@
 <template>
   <header
     class="fixed top-0 inset-x-0 z-30 transition-all duration-500 ease-premium"
-    :class="scrolled || menuOpen ? 'bg-ink/80 backdrop-blur-md' : 'bg-transparent'"
+    :class="scrolled || menuOpen ? 'bg-background/80 backdrop-blur-md' : 'bg-transparent'"
   >
     <div
       class="mx-auto max-w-content px-5 md:px-8 lg:px-12 h-16 md:h-20 flex items-center justify-between"
@@ -11,30 +11,30 @@
         class="font-display text-xl md:text-2xl tracking-tight font-bold"
       >
         {{ $t('brand.name.short') }}
-        <span class="text-bronze">
+        <span class="text-primary">
           {{ ' ' + $t('brand.lab') }}
         </span>
       </NuxtLink>
 
       <div class="flex items-center gap-4 md:gap-10">
         <nav
-          class="hidden md:flex items-center gap-8 md:gap-10 text-sm tracking-[0.18em] uppercase text-bone/70"
+          class="hidden md:flex items-center gap-8 md:gap-10 text-sm tracking-[0.18em] uppercase text-muted-foreground"
         >
           <NuxtLink
             :to="{ path: localePath('/'), hash: '#collection' }"
-            class="hover:text-bone transition-colors duration-300"
+            class="hover:text-foreground transition-colors duration-300"
           >
             {{ $t('nav.collection') }}
           </NuxtLink>
           <NuxtLink
             :to="localePath('/story')"
-            class="hover:text-bone transition-colors duration-300"
+            class="hover:text-foreground transition-colors duration-300"
           >
             {{ $t('nav.story') }}
           </NuxtLink>
           <NuxtLink
             :to="localePath('/contacts')"
-            class="hover:text-bone transition-colors duration-300"
+            class="hover:text-foreground transition-colors duration-300"
           >
             {{ $t('footer.visit') }}
           </NuxtLink>
@@ -42,44 +42,41 @@
 
         <NuxtLink
           :to="localePath('/cart')"
-          class="relative flex items-center gap-2 text-sm tracking-[0.14em] uppercase text-bone/80 hover:text-bone transition-colors"
+          class="relative flex items-center gap-2 text-sm tracking-[0.14em] uppercase text-foreground/80 hover:text-foreground transition-colors"
           :aria-label="$t('nav.open.cart')"
         >
           <span class="hidden sm:inline">{{ $t('nav.cart') }}</span>
-          <span
-            class="inline-flex h-7 min-w-7 items-center justify-center rounded-full border border-bone/25 px-2 text-xs"
-          >
-            {{ cart.getItemsCount }}
-          </span>
+          <Badge variant="cart">{{ cart.getItemsCount }}</Badge>
         </NuxtLink>
 
-        <div
-          class="hidden md:flex items-center rounded-full border border-bone/20 bg-bone/5 p-0.5 text-xs tracking-[0.14em] uppercase"
+        <ToggleGroup
+          v-model="localeModel"
+          type="single"
+          class="hidden md:flex rounded-full border border-border bg-secondary/60 p-0.5"
         >
-          <NuxtLink
+          <ToggleGroupItem
             v-for="item in locales"
             :key="item.code"
-            :to="switchLocalePath(item.code)"
-            class="rounded-full px-2.5 py-1 transition-colors"
-            :class="
-              locale === item.code ? 'bg-bone/15 text-bone' : 'text-bone/45 hover:text-bone/75'
-            "
+            :value="item.code"
+            variant="pill"
+            class="rounded-full"
+            @click="navigateToLocale(item.code)"
           >
             {{ item.code }}
-          </NuxtLink>
-        </div>
+          </ToggleGroupItem>
+        </ToggleGroup>
 
-        <button
+        <Button
           type="button"
-          class="md:hidden flex h-10 w-10 items-center justify-center text-bone/80 hover:text-bone transition-colors"
+          variant="ghost"
+          size="icon"
+          class="md:hidden text-foreground/80 hover:text-foreground"
           :aria-expanded="menuOpen"
           aria-controls="mobile-nav"
           :aria-label="$t('nav.menu')"
-          @click="toggleMenu"
+          @click="menuOpen = true"
         >
-          <span class="sr-only">{{ $t('nav.menu') }}</span>
           <svg
-            v-if="!menuOpen"
             class="h-5 w-5"
             viewBox="0 0 24 24"
             fill="none"
@@ -89,77 +86,61 @@
           >
             <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16" />
           </svg>
-          <svg
-            v-else
-            class="h-5 w-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-            aria-hidden="true"
-          >
-            <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
-          </svg>
-        </button>
+        </Button>
       </div>
     </div>
 
-    <Transition
-      enter-active-class="transition duration-300 ease-premium"
-      enter-from-class="opacity-0 -translate-y-2"
-      enter-to-class="opacity-100 translate-y-0"
-      leave-active-class="transition duration-200 ease-premium"
-      leave-from-class="opacity-100 translate-y-0"
-      leave-to-class="opacity-0 -translate-y-2"
-    >
-      <nav
-        v-if="menuOpen"
-        id="mobile-nav"
-        class="md:hidden border-t border-bone/10 bg-ink/95 backdrop-blur-md"
-      >
-        <div class="mx-auto max-w-content px-5 py-6 flex flex-col gap-1">
-          <NuxtLink
-            :to="{ path: localePath('/'), hash: '#collection' }"
-            class="px-2 py-4 text-sm tracking-[0.18em] uppercase text-bone/70 hover:text-bone transition-colors border-b border-bone/10"
-            @click="closeMenu"
+    <Sheet :open="menuOpen" @update:open="menuOpen = $event">
+      <SheetContent side="top" class="border-border bg-background/95 pt-16 md:hidden">
+        <nav id="mobile-nav" class="flex flex-col gap-1">
+          <Button
+            variant="ghost"
+            class="justify-start px-2 py-4 text-sm tracking-[0.18em] uppercase text-muted-foreground hover:text-foreground border-b border-border rounded-none"
+            as-child
           >
-            {{ $t('nav.collection') }}
-          </NuxtLink>
-          <NuxtLink
-            :to="localePath('/story')"
-            class="px-2 py-4 text-sm tracking-[0.18em] uppercase text-bone/70 hover:text-bone transition-colors border-b border-bone/10"
-            @click="closeMenu"
+            <NuxtLink :to="{ path: localePath('/'), hash: '#collection' }" @click="closeMenu">
+              {{ $t('nav.collection') }}
+            </NuxtLink>
+          </Button>
+          <Button
+            variant="ghost"
+            class="justify-start px-2 py-4 text-sm tracking-[0.18em] uppercase text-muted-foreground hover:text-foreground border-b border-border rounded-none"
+            as-child
           >
-            {{ $t('nav.story') }}
-          </NuxtLink>
-          <NuxtLink
-            :to="localePath('/contacts')"
-            class="px-2 py-4 text-sm tracking-[0.18em] uppercase text-bone/70 hover:text-bone transition-colors border-b border-bone/10"
-            @click="closeMenu"
+            <NuxtLink :to="localePath('/story')" @click="closeMenu">
+              {{ $t('nav.story') }}
+            </NuxtLink>
+          </Button>
+          <Button
+            variant="ghost"
+            class="justify-start px-2 py-4 text-sm tracking-[0.18em] uppercase text-muted-foreground hover:text-foreground border-b border-border rounded-none"
+            as-child
           >
-            {{ $t('footer.visit') }}
-          </NuxtLink>
+            <NuxtLink :to="localePath('/contacts')" @click="closeMenu">
+              {{ $t('footer.visit') }}
+            </NuxtLink>
+          </Button>
           <div class="flex items-center justify-end px-2 py-4">
-            <div
-              class="inline-flex items-center rounded-full border border-bone/20 bg-bone/5 p-0.5 text-sm tracking-[0.14em] uppercase"
+            <ToggleGroup
+              v-model="localeModel"
+              type="single"
+              class="rounded-full border border-border bg-secondary/60 p-0.5"
             >
-              <NuxtLink
+              <ToggleGroupItem
                 v-for="item in locales"
                 :key="item.code"
-                :to="switchLocalePath(item.code)"
-                class="rounded-full px-3 py-1.5 transition-colors"
-                :class="
-                  locale === item.code ? 'bg-bone/15 text-bone' : 'text-bone/45 hover:text-bone/75'
-                "
-                @click="closeMenu"
+                :value="item.code"
+                variant="pill"
+                class="rounded-full text-sm"
+                @click="navigateToLocale(item.code)"
               >
                 {{ item.code }}
-              </NuxtLink>
-            </div>
+              </ToggleGroupItem>
+            </ToggleGroup>
           </div>
-        </div>
-      </nav>
-    </Transition>
+        </nav>
+      </SheetContent>
+    </Sheet>
   </header>
 </template>
 
@@ -172,8 +153,14 @@ const localePath = useLocalePath()
 const scrolled = ref(false)
 const menuOpen = ref(false)
 
-function toggleMenu() {
-  menuOpen.value = !menuOpen.value
+const localeModel = computed({
+  get: () => locale.value,
+  set: () => {},
+})
+
+function navigateToLocale(code: string) {
+  closeMenu()
+  navigateTo(switchLocalePath(code))
 }
 
 function closeMenu() {

@@ -1,79 +1,105 @@
 <template>
   <form class="space-y-6" @submit="onSubmit">
     <div class="grid md:grid-cols-2 gap-5">
-      <label class="block">
-        <span class="text-[10px] tracking-[0.18em] uppercase text-bone/40">{{
-          $t('checkout.fields.name')
-        }}</span>
-        <input v-model="name" v-bind="nameAttrs" type="text" class="field" autocomplete="name" />
-        <span v-if="errors.name" class="error">{{ errors.name }}</span>
-      </label>
+      <div class="block">
+        <Label class="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">
+          {{ $t('checkout.fields.name') }}
+        </Label>
+        <Input
+          v-model="name"
+          v-bind="nameAttrs"
+          type="text"
+          class="field-underline"
+          autocomplete="name"
+        />
+        <p v-if="errors.name" class="mt-2 text-xs text-destructive">{{ errors.name }}</p>
+      </div>
 
-      <label class="block">
-        <span class="text-[10px] tracking-[0.18em] uppercase text-bone/40">{{
-          $t('checkout.fields.phone')
-        }}</span>
-        <input v-model="phone" v-bind="phoneAttrs" type="tel" class="field" autocomplete="tel" />
-        <span v-if="errors.phone" class="error">{{ errors.phone }}</span>
-      </label>
+      <div class="block">
+        <Label class="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">
+          {{ $t('checkout.fields.phone') }}
+        </Label>
+        <Input
+          v-model="phone"
+          v-bind="phoneAttrs"
+          type="tel"
+          class="field-underline"
+          autocomplete="tel"
+        />
+        <p v-if="errors.phone" class="mt-2 text-xs text-destructive">{{ errors.phone }}</p>
+      </div>
 
-      <label class="block md:col-span-2">
-        <span class="text-[10px] tracking-[0.18em] uppercase text-bone/40">{{
-          $t('checkout.fields.email')
-        }}</span>
-        <input
+      <div class="block md:col-span-2">
+        <Label class="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">
+          {{ $t('checkout.fields.email') }}
+        </Label>
+        <Input
           v-model="email"
           v-bind="emailAttrs"
           type="email"
-          class="field"
+          class="field-underline"
           autocomplete="email"
         />
-        <span v-if="errors.email" class="error">{{ errors.email }}</span>
-      </label>
+        <p v-if="errors.email" class="mt-2 text-xs text-destructive">{{ errors.email }}</p>
+      </div>
 
-      <label class="block">
-        <span class="text-[10px] tracking-[0.18em] uppercase text-bone/40">{{
-          $t('checkout.fields.city')
-        }}</span>
-        <input
+      <div class="block">
+        <Label class="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">
+          {{ $t('checkout.fields.city') }}
+        </Label>
+        <Input
           v-model="city"
           v-bind="cityAttrs"
           type="text"
-          class="field"
+          class="field-underline"
           autocomplete="address-level2"
         />
-        <span v-if="errors.city" class="error">{{ errors.city }}</span>
-      </label>
+        <p v-if="errors.city" class="mt-2 text-xs text-destructive">{{ errors.city }}</p>
+      </div>
 
-      <label class="block">
-        <span class="text-[10px] tracking-[0.18em] uppercase text-bone/40">{{
-          $t('checkout.fields.address')
-        }}</span>
-        <input
+      <div class="block">
+        <Label class="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">
+          {{ $t('checkout.fields.address') }}
+        </Label>
+        <Input
           v-model="address"
           v-bind="addressAttrs"
           type="text"
-          class="field"
+          class="field-underline"
           autocomplete="street-address"
         />
-        <span v-if="errors.address" class="error">{{ errors.address }}</span>
-      </label>
+        <p v-if="errors.address" class="mt-2 text-xs text-destructive">{{ errors.address }}</p>
+      </div>
 
-      <label class="block md:col-span-2">
-        <span class="text-[10px] tracking-[0.18em] uppercase text-bone/40">{{
-          $t('checkout.fields.comment')
-        }}</span>
-        <textarea v-model="comment" v-bind="commentAttrs" rows="4" class="field resize-none" />
-      </label>
+      <div class="block md:col-span-2">
+        <Label class="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">
+          {{ $t('checkout.fields.comment') }}
+        </Label>
+        <Textarea
+          v-model="comment"
+          v-bind="commentAttrs"
+          rows="4"
+          class="field-underline resize-none"
+        />
+      </div>
+
+      <div class="block md:col-span-2">
+        <FormPersonalDataConsent
+          v-model="personalDataConsent"
+          v-bind="personalDataConsentAttrs"
+          :error="errors.personalDataConsent"
+        />
+      </div>
     </div>
 
-    <button
+    <Button
       type="submit"
-      class="magnetic-btn magnetic-btn--filled px-8 py-4 text-xs w-full md:w-auto"
+      variant="magnetic-filled"
+      class="w-full px-8 py-4 md:w-auto"
       :disabled="loading"
     >
       {{ loading ? $t('checkout.submitting') : $t('checkout.submit') }}
-    </button>
+    </Button>
   </form>
 </template>
 
@@ -96,6 +122,7 @@ const validationSchema = computed(() =>
       city: z.string().trim().min(2, t('checkout.errors.city')),
       address: z.string().trim().min(5, t('checkout.errors.address')),
       comment: z.string().trim(),
+      personalDataConsent: personalDataConsentField(),
     }),
   ),
 )
@@ -109,6 +136,7 @@ const { handleSubmit, defineField, errors } = useForm({
     city: '',
     address: '',
     comment: '',
+    personalDataConsent: false,
   },
 })
 
@@ -118,6 +146,7 @@ const [email, emailAttrs] = defineField('email')
 const [city, cityAttrs] = defineField('city')
 const [address, addressAttrs] = defineField('address')
 const [comment, commentAttrs] = defineField('comment')
+const [personalDataConsent, personalDataConsentAttrs] = defineField('personalDataConsent')
 
 const onSubmit = handleSubmit((values) => {
   if (props.loading) return
@@ -132,20 +161,3 @@ const onSubmit = handleSubmit((values) => {
   })
 })
 </script>
-
-<style scoped lang="scss">
-@use '../../assets/scss/variables' as *;
-
-.field {
-  @apply mt-2 w-full bg-transparent border-0 border-b border-bone/20 px-0 py-3 text-bone outline-none transition-colors duration-300;
-  font-family: 'Manrope', sans-serif;
-
-  &:focus {
-    border-color: $bronze;
-  }
-}
-
-.error {
-  @apply mt-2 block text-xs text-ember;
-}
-</style>

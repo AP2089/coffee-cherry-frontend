@@ -66,6 +66,24 @@ export interface ApiResponse<T> {
   message?: string
 }
 
+export type ContactMessageStatus = 'new' | 'read' | 'archived'
+
+export interface ContactMessage {
+  _id: string
+  name: string
+  email: string
+  message: string
+  status: ContactMessageStatus
+  createdAt?: string
+  updatedAt?: string
+}
+
+export interface CreateContactMessagePayload {
+  name: string
+  email: string
+  message: string
+}
+
 export interface CartItem {
   slug: string
   name: string

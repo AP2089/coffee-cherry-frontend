@@ -1,13 +1,15 @@
 <template>
   <div class="pt-28 md:pt-32 pb-12">
     <div class="mx-auto max-w-content px-5 md:px-8 lg:px-12">
-      <p class="text-[10px] tracking-[0.24em] uppercase text-bone/40">{{ $t('checkout.label') }}</p>
+      <p class="text-[10px] tracking-[0.24em] uppercase text-muted-foreground">
+        {{ $t('checkout.label') }}
+      </p>
       <h1 class="mt-3 font-display text-4xl md:text-6xl font-semibold tracking-tight">
         {{ $t('checkout.title') }}
       </h1>
 
       <div v-if="!cart.items.length" class="mt-20">
-        <UiErrorState
+        <AppErrorState
           :title="$t('checkout.empty.title')"
           :description="$t('checkout.empty.description')"
           action-to="/#collection"
@@ -18,37 +20,41 @@
       <div v-else class="mt-14 grid lg:grid-cols-12 gap-12">
         <div class="lg:col-span-7">
           <CheckoutForm :loading="loading" @submit="submitOrder" />
-          <p v-if="errorMessage" class="mt-6 text-sm text-ember">{{ errorMessage }}</p>
+          <Alert v-if="errorMessage" variant="destructive" class="mt-6">
+            <AlertDescription>{{ errorMessage }}</AlertDescription>
+          </Alert>
         </div>
         <div class="lg:col-span-4 lg:col-start-9">
-          <div class="border border-bone/10 p-6 md:p-8 space-y-5">
-            <p class="text-xs tracking-[0.18em] uppercase text-bone/40">
-              {{ $t('checkout.order') }}
-            </p>
-            <div
-              v-for="item in cart.items"
-              :key="`${item.slug}-${item.weight}`"
-              class="flex justify-between gap-4 text-sm"
-            >
-              <span class="text-bone/70">
-                {{
-                  $t('checkout.item.line', {
-                    name: formatCoffeeName(item.name),
-                    weight: item.weight,
-                    quantity: item.quantity,
-                  })
-                }}
-              </span>
-              <span class="font-serif">{{ formatPrice(item.price * item.quantity) }}</span>
-            </div>
-            <div class="h-px bg-bone/10" />
-            <div class="flex justify-between items-baseline">
-              <span class="text-xs tracking-[0.18em] uppercase text-bone/45">{{
-                $t('checkout.total')
-              }}</span>
-              <span class="font-serif text-3xl">{{ formatPrice(cart.getTotal) }}</span>
-            </div>
-          </div>
+          <Card class="border-border">
+            <CardContent class="space-y-5 p-6 md:p-8">
+              <p class="text-xs tracking-[0.18em] uppercase text-muted-foreground">
+                {{ $t('checkout.order') }}
+              </p>
+              <div
+                v-for="item in cart.items"
+                :key="`${item.slug}-${item.weight}`"
+                class="flex justify-between gap-4 text-sm"
+              >
+                <span class="text-foreground/70">
+                  {{
+                    $t('checkout.item.line', {
+                      name: formatCoffeeName(item.name),
+                      weight: item.weight,
+                      quantity: item.quantity,
+                    })
+                  }}
+                </span>
+                <span class="font-serif">{{ formatPrice(item.price * item.quantity) }}</span>
+              </div>
+              <Separator />
+              <div class="flex justify-between items-baseline">
+                <span class="text-xs tracking-[0.18em] uppercase text-muted-foreground">{{
+                  $t('checkout.total')
+                }}</span>
+                <span class="font-serif text-3xl">{{ formatPrice(cart.getTotal) }}</span>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

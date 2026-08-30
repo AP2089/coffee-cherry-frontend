@@ -1,14 +1,12 @@
 <template>
   <div class="mx-auto max-w-lg text-center py-24 px-6">
-    <p class="font-serif text-3xl md:text-4xl text-bone/90">{{ titleText }}</p>
-    <p class="mt-4 text-bone/50 leading-relaxed">{{ descriptionText }}</p>
-    <NuxtLink
-      v-if="actionTo"
-      :to="resolvedActionTo"
-      class="magnetic-btn inline-flex mt-10 px-6 py-3 text-xs"
-    >
-      {{ actionLabelText }}
-    </NuxtLink>
+    <p class="font-serif text-3xl md:text-4xl text-foreground/90">{{ titleText }}</p>
+    <p class="mt-4 text-muted-foreground leading-relaxed">{{ descriptionText }}</p>
+    <Button v-if="actionTo" variant="magnetic" class="mt-10 px-6 py-3" as-child>
+      <NuxtLink :to="resolvedActionTo">
+        {{ actionLabelText }}
+      </NuxtLink>
+    </Button>
   </div>
 </template>
 

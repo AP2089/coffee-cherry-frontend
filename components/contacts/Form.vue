@@ -1,39 +1,69 @@
 <template>
-  <form class="space-y-6" @submit="onSubmit">
-    <label class="block">
-      <span class="text-[10px] tracking-[0.18em] uppercase text-bone/40">{{
-        $t('contacts.form.name')
-      }}</span>
-      <input v-model="name" v-bind="nameAttrs" type="text" class="field" autocomplete="name" />
-      <span v-if="errors.name" class="error">{{ errors.name }}</span>
-    </label>
+  <div class="space-y-6">
+    <Alert v-if="submitted" class="border-primary/30 bg-primary/10 text-primary">
+      <AlertDescription>{{ $t('contacts.form.success') }}</AlertDescription>
+    </Alert>
 
-    <label class="block">
-      <span class="text-[10px] tracking-[0.18em] uppercase text-bone/40">email</span>
-      <input v-model="email" v-bind="emailAttrs" type="email" class="field" autocomplete="email" />
-      <span v-if="errors.email" class="error">{{ errors.email }}</span>
-    </label>
+    <Alert v-if="errorMessage" variant="destructive">
+      <AlertDescription>{{ errorMessage }}</AlertDescription>
+    </Alert>
 
-    <label class="block">
-      <span class="text-[10px] tracking-[0.18em] uppercase text-bone/40">{{
-        $t('contacts.form.message')
-      }}</span>
-      <textarea v-model="message" v-bind="messageAttrs" rows="5" class="field resize-none" />
-      <span v-if="errors.message" class="error">{{ errors.message }}</span>
-    </label>
+    <form class="space-y-6" @submit="onSubmit">
+      <div class="block">
+        <Label class="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">
+          {{ $t('contacts.form.name') }}
+        </Label>
+        <Input
+          v-model="name"
+          v-bind="nameAttrs"
+          type="text"
+          class="field-underline"
+          autocomplete="name"
+        />
+        <p v-if="errors.name" class="mt-2 text-xs text-destructive">{{ errors.name }}</p>
+      </div>
 
-    <p v-if="submitted" class="text-sm text-bronze">
-      {{ $t('contacts.form.success') }}
-    </p>
+      <div class="block">
+        <Label class="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">email</Label>
+        <Input
+          v-model="email"
+          v-bind="emailAttrs"
+          type="email"
+          class="field-underline"
+          autocomplete="email"
+        />
+        <p v-if="errors.email" class="mt-2 text-xs text-destructive">{{ errors.email }}</p>
+      </div>
 
-    <button
-      type="submit"
-      class="magnetic-btn magnetic-btn--filled px-8 py-4 text-xs w-full md:w-auto"
-      :disabled="isSubmitting"
-    >
-      {{ isSubmitting ? $t('contacts.form.submitting') : $t('contacts.form.submit') }}
-    </button>
-  </form>
+      <div class="block">
+        <Label class="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">
+          {{ $t('contacts.form.message') }}
+        </Label>
+        <Textarea
+          v-model="message"
+          v-bind="messageAttrs"
+          rows="5"
+          class="field-underline resize-none"
+        />
+        <p v-if="errors.message" class="mt-2 text-xs text-destructive">{{ errors.message }}</p>
+      </div>
+
+      <FormPersonalDataConsent
+        v-model="personalDataConsent"
+        v-bind="personalDataConsentAttrs"
+        :error="errors.personalDataConsent"
+      />
+
+      <Button
+        type="submit"
+        variant="magnetic-filled"
+        class="w-full px-8 py-4 md:w-auto"
+        :disabled="isSubmitting"
+      >
+        {{ isSubmitting ? $t('contacts.form.submitting') : $t('contacts.form.submit') }}
+      </Button>
+    </form>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -41,8 +71,11 @@ import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { z } from 'zod'
 
+import { contactService } from '~/services/contact.service'
+
 const { t } = useI18n()
 const submitted = ref(false)
+const errorMessage = ref('')
 
 const validationSchema = computed(() =>
   toTypedSchema(
@@ -50,6 +83,7 @@ const validationSchema = computed(() =>
       name: z.string().trim().min(2, t('contacts.form.errors.name')),
       email: z.string().trim().email(t('contacts.form.errors.email')),
       message: z.string().trim().min(10, t('contacts.form.errors.message')),
+      personalDataConsent: personalDataConsentField(),
     }),
   ),
 )
@@ -60,34 +94,33 @@ const { handleSubmit, defineField, errors, isSubmitting, resetForm } = useForm({
     name: '',
     email: '',
     message: '',
+    personalDataConsent: false,
   },
 })
 
 const [name, nameAttrs] = defineField('name')
 const [email, emailAttrs] = defineField('email')
 const [message, messageAttrs] = defineField('message')
+const [personalDataConsent, personalDataConsentAttrs] = defineField('personalDataConsent')
 
-const onSubmit = handleSubmit(async () => {
+const onSubmit = handleSubmit(async (values) => {
   submitted.value = false
-  await new Promise((resolve) => setTimeout(resolve, 400))
-  submitted.value = true
-  resetForm()
+  errorMessage.value = ''
+
+  try {
+    await contactService.create({
+      name: values.name,
+      email: values.email,
+      message: values.message,
+    })
+    submitted.value = true
+    resetForm()
+  } catch (err: unknown) {
+    const message =
+      err && typeof err === 'object' && 'data' in err
+        ? String((err as { data?: { message?: string } }).data?.message || '')
+        : ''
+    errorMessage.value = message || t('checkout.error.fallback')
+  }
 })
 </script>
-
-<style scoped lang="scss">
-@use '../../assets/scss/variables' as *;
-
-.field {
-  @apply mt-2 w-full bg-transparent border-0 border-b border-bone/20 px-0 py-3 text-bone outline-none transition-colors duration-300;
-  font-family: 'Manrope', sans-serif;
-
-  &:focus {
-    border-color: $bronze;
-  }
-}
-
-.error {
-  @apply mt-2 block text-xs text-ember;
-}
-</style>

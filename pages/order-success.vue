@@ -1,9 +1,9 @@
 <template>
   <div class="pt-28 md:pt-32 pb-12">
     <div class="mx-auto max-w-content px-5 md:px-8 lg:px-12">
-      <UiSkeletonLoader v-if="pending" />
+      <AppSkeletonLoader v-if="pending" />
 
-      <UiErrorState
+      <AppErrorState
         v-else-if="error || !order"
         :title="$t('order.success.not.found.title')"
         :description="$t('order.success.not.found.description')"
@@ -12,74 +12,83 @@
       />
 
       <template v-else>
-        <p class="text-[10px] tracking-[0.24em] uppercase text-bronze">
+        <p class="text-[10px] tracking-[0.24em] uppercase text-primary">
           {{ $t('order.success.label') }}
         </p>
         <h1 class="mt-3 font-display text-4xl md:text-6xl font-semibold tracking-tight">
           {{ $t('order.success.title') }}
         </h1>
-        <p class="mt-4 text-bone/55 max-w-xl leading-relaxed">
+        <p class="mt-4 text-muted-foreground max-w-xl leading-relaxed">
           {{ $t('order.success.lead') }}
         </p>
 
         <div class="mt-14 grid lg:grid-cols-12 gap-10">
-          <div class="lg:col-span-7 border border-bone/10 p-6 md:p-8 space-y-5">
-            <div>
-              <p class="text-[10px] tracking-[0.18em] uppercase text-bone/40">
-                {{ $t('order.success.order.number') }}
-              </p>
-              <p class="mt-2 font-mono text-sm md:text-base break-all">{{ order._id }}</p>
-            </div>
-            <div class="h-px bg-bone/10" />
-            <div
-              v-for="item in order.items"
-              :key="`${item.slug}-${item.weight}`"
-              class="flex justify-between gap-4"
-            >
+          <Card class="lg:col-span-7 border-border">
+            <CardContent class="space-y-5 p-6 md:p-8">
               <div>
-                <p class="font-display">{{ formatCoffeeName(item.name) }}</p>
-                <p class="text-sm text-bone/45 mt-1">
-                  {{
-                    $t('order.success.item.meta', { weight: item.weight, quantity: item.quantity })
-                  }}
+                <p class="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">
+                  {{ $t('order.success.order.number') }}
                 </p>
+                <p class="mt-2 font-mono text-sm md:text-base break-all">{{ order._id }}</p>
               </div>
-              <p class="font-serif text-xl">{{ formatPrice(item.price * item.quantity) }}</p>
-            </div>
-            <div class="h-px bg-bone/10" />
-            <div class="flex justify-between items-baseline">
-              <span class="text-xs tracking-[0.18em] uppercase text-bone/45">{{
-                $t('order.success.total')
-              }}</span>
-              <span class="font-serif text-3xl">{{ formatPrice(order.totalPrice) }}</span>
-            </div>
-          </div>
+              <Separator />
+              <div
+                v-for="item in order.items"
+                :key="`${item.slug}-${item.weight}`"
+                class="flex justify-between gap-4"
+              >
+                <div>
+                  <p class="font-display">{{ formatCoffeeName(item.name) }}</p>
+                  <p class="text-sm text-muted-foreground mt-1">
+                    {{
+                      $t('order.success.item.meta', {
+                        weight: item.weight,
+                        quantity: item.quantity,
+                      })
+                    }}
+                  </p>
+                </div>
+                <p class="font-serif text-xl">{{ formatPrice(item.price * item.quantity) }}</p>
+              </div>
+              <Separator />
+              <div class="flex justify-between items-baseline">
+                <span class="text-xs tracking-[0.18em] uppercase text-muted-foreground">{{
+                  $t('order.success.total')
+                }}</span>
+                <span class="font-serif text-3xl">{{ formatPrice(order.totalPrice) }}</span>
+              </div>
+            </CardContent>
+          </Card>
 
-          <div class="lg:col-span-4 lg:col-start-9 border border-bone/10 p-6 md:p-8 space-y-4">
-            <p class="text-[10px] tracking-[0.18em] uppercase text-bone/40">
-              {{ $t('order.success.delivery') }}
-            </p>
-            <p class="text-bone/80">{{ order.customer.name }}</p>
-            <p class="text-bone/55 text-sm leading-relaxed">
-              {{ order.customer.phone }}<br />
-              {{ order.customer.email }}<br />
-              {{ order.customer.city }}, {{ order.customer.address }}
-            </p>
-            <p
-              v-if="order.customer.comment"
-              class="text-sm text-bone/45 pt-2 border-t border-bone/10"
-            >
-              {{ order.customer.comment }}
-            </p>
-            <p class="text-xs tracking-[0.16em] uppercase text-bone/35 pt-4">
-              {{ $t('order.success.status', { status: statusLabel }) }}
-            </p>
-          </div>
+          <Card class="lg:col-span-4 lg:col-start-9 border-border">
+            <CardContent class="space-y-4 p-6 md:p-8">
+              <p class="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">
+                {{ $t('order.success.delivery') }}
+              </p>
+              <p class="text-foreground/80">{{ order.customer.name }}</p>
+              <p class="text-muted-foreground text-sm leading-relaxed">
+                {{ order.customer.phone }}<br />
+                {{ order.customer.email }}<br />
+                {{ order.customer.city }}, {{ order.customer.address }}
+              </p>
+              <p
+                v-if="order.customer.comment"
+                class="text-sm text-muted-foreground pt-2 border-t border-border"
+              >
+                {{ order.customer.comment }}
+              </p>
+              <p class="text-xs tracking-[0.16em] uppercase text-muted-foreground/70 pt-4">
+                {{ $t('order.success.status', { status: statusLabel }) }}
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
-        <NuxtLink :to="localePath('/')" class="magnetic-btn inline-flex mt-12 px-8 py-4 text-xs">
-          {{ $t('order.success.back.home') }}
-        </NuxtLink>
+        <Button variant="magnetic" class="mt-12 px-8 py-4" as-child>
+          <NuxtLink :to="localePath('/')">
+            {{ $t('order.success.back.home') }}
+          </NuxtLink>
+        </Button>
       </template>
     </div>
   </div>

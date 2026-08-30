@@ -1,20 +1,21 @@
 <template>
   <div>
-    <p class="text-[10px] tracking-[0.2em] uppercase text-bone/40 mb-5">
+    <p class="text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-5">
       {{ $t('coffee.flavor.notes') }}
     </p>
     <ul class="flex flex-wrap gap-3">
-      <li
-        v-for="(note, i) in notes"
-        :key="note"
-        class="flavor-note px-4 py-2 border text-sm tracking-wide"
-        :style="{
-          borderColor: `${accent}55`,
-          color: accent,
-          transitionDelay: `${i * 60}ms`,
-        }"
-      >
-        {{ note }}
+      <li v-for="(note, i) in notes" :key="note">
+        <Badge
+          variant="flavor"
+          class="flavor-note"
+          :style="{
+            borderColor: `${accent}55`,
+            color: accent,
+            transitionDelay: `${i * 60}ms`,
+          }"
+        >
+          {{ note }}
+        </Badge>
       </li>
     </ul>
   </div>

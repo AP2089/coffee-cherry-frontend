@@ -1,13 +1,15 @@
 <template>
   <div class="pt-28 md:pt-32 pb-12">
     <div class="mx-auto max-w-content px-5 md:px-8 lg:px-12">
-      <p class="text-[10px] tracking-[0.24em] uppercase text-bone/40">{{ $t('cart.label') }}</p>
+      <p class="text-[10px] tracking-[0.24em] uppercase text-muted-foreground">
+        {{ $t('cart.label') }}
+      </p>
       <h1 class="mt-3 font-display text-4xl md:text-6xl font-semibold tracking-tight">
         {{ $t('cart.title') }}
       </h1>
 
       <div v-if="!cart.items.length" class="mt-20">
-        <UiErrorState
+        <AppErrorState
           :title="$t('cart.empty.title')"
           :description="$t('cart.empty.description')"
           action-to="/#collection"
@@ -20,30 +22,27 @@
           <CartItem v-for="item in cart.items" :key="`${item.slug}-${item.weight}`" :item="item" />
         </div>
         <div class="lg:col-span-4 lg:col-start-9">
-          <div class="border border-bone/10 p-6 md:p-8 sticky top-28">
-            <div class="flex justify-between items-baseline">
-              <span class="text-xs tracking-[0.18em] uppercase text-bone/45">{{
-                $t('cart.total')
-              }}</span>
-              <span class="font-serif text-3xl">{{ formatPrice(cart.getTotal) }}</span>
-            </div>
-            <p class="mt-3 text-sm text-bone/45">
-              {{ $t('cart.items.count', { count: cart.getItemsCount }) }}
-            </p>
-            <NuxtLink
-              :to="localePath('/checkout')"
-              class="magnetic-btn magnetic-btn--filled w-full mt-8 px-6 py-4 text-xs inline-flex justify-center"
-            >
-              {{ $t('cart.checkout') }}
-            </NuxtLink>
-            <button
-              type="button"
-              class="mt-4 w-full text-xs tracking-[0.16em] uppercase text-bone/40 hover:text-bone transition-colors"
-              @click="cart.clearCart()"
-            >
-              {{ $t('cart.clear') }}
-            </button>
-          </div>
+          <Card class="sticky top-28 border-border">
+            <CardContent class="space-y-5 p-6 md:p-8">
+              <div class="flex justify-between items-baseline">
+                <span class="text-xs tracking-[0.18em] uppercase text-muted-foreground">{{
+                  $t('cart.total')
+                }}</span>
+                <span class="font-serif text-3xl">{{ formatPrice(cart.getTotal) }}</span>
+              </div>
+              <p class="text-sm text-muted-foreground">
+                {{ $t('cart.items.count', { count: cart.getItemsCount }) }}
+              </p>
+              <Button variant="magnetic-filled" class="mt-3 w-full px-6 py-4" as-child>
+                <NuxtLink :to="localePath('/checkout')">
+                  {{ $t('cart.checkout') }}
+                </NuxtLink>
+              </Button>
+              <Button variant="ghost-text" class="w-full" @click="cart.clearCart()">
+                {{ $t('cart.clear') }}
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
