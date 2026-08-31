@@ -6,7 +6,6 @@ export default defineNuxtConfig({
   future: {
     compatibilityVersion: 4,
   },
-  // Keep pages/, components/, layouts/ at project root (alongside app/)
   srcDir: '.',
   devtools: { enabled: false },
 
@@ -58,14 +57,10 @@ export default defineNuxtConfig({
   css: ['~/assets/css/tailwind.css', '~/assets/scss/main.scss'],
 
   runtimeConfig: {
-    // Server-side (Docker network): http://backend:3001/api
-    apiUrl:
-      process.env.NUXT_API_URL || process.env.NUXT_PUBLIC_API_URL || 'http://localhost:3001/api',
+    apiUrl: process.env.API_URL || '',
     public: {
-      // Browser: http://localhost:3001/api
-      apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:3001/api',
-      socketUrl: process.env.NUXT_PUBLIC_SOCKET_URL || 'http://localhost:3001',
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+      apiUrl: process.env.API_URL || '',
+      socketUrl: process.env.SOCKET_URL || '',
     },
   },
 

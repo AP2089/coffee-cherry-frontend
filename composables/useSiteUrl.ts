@@ -1,10 +1,7 @@
 export function useSiteUrl() {
-  const config = useRuntimeConfig()
+  const requestUrl = useRequestURL()
 
-  return computed(() => {
-    const raw = config.public.siteUrl || 'http://localhost:3000'
-    return raw.replace(/\/+$/, '')
-  })
+  return computed(() => requestUrl.origin)
 }
 
 export function toAbsoluteUrl(path: string, siteUrl: string) {
