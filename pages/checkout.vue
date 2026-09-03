@@ -63,7 +63,7 @@
 
 <script setup lang="ts">
 import type { Customer } from '~/types'
-import { orderService } from '~/services/order.service'
+import { apiPostOrder } from '~/api/orders'
 
 const cart = useCartStore()
 const { t } = useI18n()
@@ -84,7 +84,7 @@ async function submitOrder(customer: Customer) {
   errorMessage.value = ''
 
   try {
-    const order = await orderService.create({
+    const response = await apiPostOrder({
       customer,
       items: cart.items.map((item) => ({
         slug: item.slug,
@@ -94,7 +94,7 @@ async function submitOrder(customer: Customer) {
     })
 
     cart.clearCart()
-    await navigateTo(localePath(`/order-success?id=${order._id}`))
+    await navigateTo(localePath(`/order-success?id=${response.data._id}`))
   } catch (err: unknown) {
     const message =
       err && typeof err === 'object' && 'data' in err

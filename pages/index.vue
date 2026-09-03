@@ -24,9 +24,9 @@
 </template>
 
 <script setup lang="ts">
-import { coffeeService } from '~/services/coffee.service'
+import { apiGetCoffees } from '~/api/coffees'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 useSeoPage({
   title: t('home.seo.title'),
@@ -34,13 +34,16 @@ useSeoPage({
   path: '/',
 })
 
-const { locale } = useI18n()
+const localeQuery = computed(() => (locale.value === 'ru' ? {} : { locale: locale.value }))
 
 const {
-  data: coffees,
+  data: coffeesResponse,
   pending,
   error,
-} = await useAsyncData('coffees', () => coffeeService.getAll(), {
+} = await apiGetCoffees({
   watch: [locale],
+  query: localeQuery,
 })
+
+const coffees = computed(() => coffeesResponse.value?.data)
 </script>

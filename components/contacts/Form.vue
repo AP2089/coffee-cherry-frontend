@@ -71,7 +71,7 @@ import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { z } from 'zod'
 
-import { contactService } from '~/services/contact.service'
+import { apiPostContact } from '~/api/contacts'
 
 const { t } = useI18n()
 const submitted = ref(false)
@@ -108,11 +108,15 @@ const onSubmit = handleSubmit(async (values) => {
   errorMessage.value = ''
 
   try {
-    await contactService.create({
+    const response = await apiPostContact({
       name: values.name,
       email: values.email,
       message: values.message,
     })
+
+    if (!response.success || !response.data) {
+      throw new Error(response.message || 'Failed to send message')
+    }
     submitted.value = true
     resetForm()
   } catch (err: unknown) {

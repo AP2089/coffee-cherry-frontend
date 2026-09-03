@@ -105,21 +105,24 @@
 
 <script setup lang="ts">
 import type { CoffeeWeight } from '~/types'
-import { coffeeService } from '~/services/coffee.service'
+import { apiGetCoffee } from '~/api/coffees'
 
 const route = useRoute()
 const cart = useCartStore()
 const { t, locale } = useI18n()
 const slug = computed(() => String(route.params.slug || ''))
+const localeQuery = computed(() => (locale.value === 'ru' ? {} : { locale: locale.value }))
 
 const {
-  data: coffee,
+  data: coffeeResponse,
   pending,
   error,
-} = await useAsyncData(`coffee-${slug.value}`, () => coffeeService.getBySlug(slug.value), {
+} = await apiGetCoffee(slug, {
   watch: [slug, locale],
+  query: localeQuery,
 })
 
+const coffee = computed(() => coffeeResponse.value?.data)
 const localizedCoffee = useLocalizedCoffee(coffee)
 const theme = computed(() => useCoffeeTheme(slug.value))
 const weight = ref<CoffeeWeight>(250)
