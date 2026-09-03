@@ -95,7 +95,7 @@
 </template>
 
 <script setup lang="ts">
-import { orderService } from '~/services/order.service'
+import { apiGetOrder } from '~/api/orders'
 import type { OrderStatus } from '~/types'
 
 const route = useRoute()
@@ -104,13 +104,14 @@ const localePath = useLocalePath()
 const id = computed(() => String(route.query.id || ''))
 
 const {
-  data: order,
+  data: orderResponse,
   pending,
   error,
-} = await useAsyncData(`order-${id.value}`, async () => {
-  if (!id.value) throw createError({ statusCode: 404, statusMessage: 'Order not found' })
-  return orderService.getById(id.value)
+} = await apiGetOrder(id, {
+  immediate: Boolean(id.value),
 })
+
+const order = computed(() => orderResponse.value?.data)
 
 const statusLabel = computed(() => {
   const status = order.value?.status as OrderStatus | undefined

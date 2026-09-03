@@ -1,3 +1,5 @@
+import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack'
+
 export type CoffeeWeight = 250 | 500 | 1000
 
 export interface Coffee {
@@ -59,6 +61,8 @@ export interface CreateOrderPayload {
   }>
   customer: Customer
 }
+
+export type FetchOptions = NitroFetchOptions<NitroFetchRequest>
 
 export interface ApiResponse<T> {
   success: boolean
