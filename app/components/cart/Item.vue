@@ -1,6 +1,6 @@
 <template>
   <div class="flex gap-4 group">
-    <div class="relative w-20 h-24 shrink-0 overflow-hidden bg-ink-mute">
+    <div class="cart-item__media relative w-20 h-24 shrink-0 overflow-hidden bg-ink-mute">
       <img
         :src="imageSrc"
         :alt="item.name"
@@ -66,3 +66,14 @@ const imageSrc = computed(() => {
   return `/images/${props.item.slug}.jpg`
 })
 </script>
+
+<style scoped lang="scss">
+.cart-item__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center;
+}
+</style>
