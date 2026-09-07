@@ -6,7 +6,7 @@ vi.mock('~/composables/useSupportChat', () => ({
   getChatGuestProfile: vi.fn(() => null),
   getChatSessionId: vi.fn(() => 'session-test'),
   saveChatGuestProfile: vi.fn(),
-  useSocketUrl: vi.fn(() => 'http://localhost:3001'),
+  useSocketUrl: vi.fn(() => 'http://localhost:3013'),
 }))
 
 describe('supportChat store', () => {
