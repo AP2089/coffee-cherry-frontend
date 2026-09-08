@@ -7,7 +7,7 @@
       <img
         :src="coffee.image"
         :alt="coffee.name"
-        class="absolute inset-0 size-full object-cover object-center"
+        class="coffee-hero__image absolute inset-0 size-full object-cover object-center"
       />
       <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/30" />
       <div
@@ -47,3 +47,11 @@ const { t } = useI18n()
 const theme = computed(() => useCoffeeTheme(props.coffee.slug))
 const mood = computed(() => t(`moods.${props.coffee.slug}` as 'moods.bloom'))
 </script>
+
+<style scoped lang="scss">
+.coffee-hero__image {
+  max-width: none;
+  height: 100%;
+  width: 100%;
+}
+</style>

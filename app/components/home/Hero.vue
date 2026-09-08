@@ -4,7 +4,7 @@
       <img
         src="/images/hero-banner.jpg"
         alt=""
-        class="hero__image absolute inset-0 h-full w-full object-cover"
+        class="hero__image absolute inset-0 size-full object-cover object-center"
       />
       <div class="hero__veil absolute inset-0" />
       <div class="hero__glow absolute inset-0 pointer-events-none" aria-hidden="true" />
@@ -60,6 +60,12 @@ onMounted(() => {
 
 <style scoped lang="scss">
 @use '../../assets/scss/variables' as *;
+
+.hero__image {
+  max-width: none;
+  height: 100%;
+  width: 100%;
+}
 
 .hero__veil {
   background:

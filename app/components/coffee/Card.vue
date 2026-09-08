@@ -22,7 +22,10 @@ const localePath = useLocalePath()
 <style scoped lang="scss">
 .coffee-card img {
   display: block;
-  min-height: 100%;
-  min-width: 100%;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center;
 }
 </style>
