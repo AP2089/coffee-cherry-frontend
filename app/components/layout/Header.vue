@@ -59,7 +59,7 @@
             :key="item.code"
             :value="item.code"
             variant="pill"
-            class="rounded-full"
+            class="rounded-full cursor-pointer"
             @click="navigateToLocale(item.code)"
           >
             {{ item.code }}
@@ -131,7 +131,7 @@
                 :key="item.code"
                 :value="item.code"
                 variant="pill"
-                class="rounded-full text-sm"
+                class="rounded-full text-sm cursor-pointer"
                 @click="navigateToLocale(item.code)"
               >
                 {{ item.code }}
