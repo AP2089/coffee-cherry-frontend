@@ -1,3 +1,19 @@
+<script setup lang="ts">
+import type { CartItem } from '~/types'
+import { normalizeCartImage } from '~/utils/cart-storage'
+
+interface IProps {
+  item: CartItem
+}
+
+const props = defineProps<IProps>()
+const cart = useCartStore()
+
+const displayItem = computed(() => localizeCartItem(props.item))
+
+const imageSrc = computed(() => normalizeCartImage(props.item.image, props.item.slug))
+</script>
+
 <template>
   <div class="flex gap-4 group">
     <div class="cart-item__media relative w-20 h-24 shrink-0 overflow-hidden bg-ink-mute">
@@ -50,22 +66,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import type { CartItem } from '~/types'
-
-const props = defineProps<{ item: CartItem }>()
-const cart = useCartStore()
-
-const displayItem = computed(() => localizeCartItem(props.item))
-
-const imageSrc = computed(() => {
-  if (props.item.image && /\.(jpe?g|png|webp)$/i.test(props.item.image)) {
-    return props.item.image
-  }
-  return `/images/${props.item.slug}.jpg`
-})
-</script>
 
 <style scoped lang="scss">
 .cart-item__media img {

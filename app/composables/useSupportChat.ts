@@ -1,3 +1,5 @@
+import { useLocalStorage, type RemovableRef } from '@vueuse/core'
+
 const SESSION_KEY = 'coffee-cherry-chat-session'
 const PROFILE_KEY = 'coffee-cherry-chat-profile'
 
@@ -6,51 +8,55 @@ export interface ChatGuestProfile {
   guestEmail: string
 }
 
+let sessionIdStorage: RemovableRef<string> | null = null
+let profileStorage: RemovableRef<ChatGuestProfile | null> | null = null
+
+function useChatSessionStorage() {
+  if (!sessionIdStorage) {
+    sessionIdStorage = useLocalStorage(SESSION_KEY, '', { flush: 'sync' })
+  }
+  return sessionIdStorage
+}
+
+function useChatProfileStorage() {
+  if (!profileStorage) {
+    profileStorage = useLocalStorage<ChatGuestProfile | null>(PROFILE_KEY, null, {
+      flush: 'sync',
+    })
+  }
+  return profileStorage
+}
+
 export function useSocketUrl(): string {
   const config = useRuntimeConfig()
   return String(config.public.socketUrl)
 }
 
 export function getChatSessionId(): string {
-  if (!import.meta.client) return ''
+  const sessionId = useChatSessionStorage()
 
-  let sessionId = localStorage.getItem(SESSION_KEY)
-
-  if (!sessionId) {
-    sessionId = crypto.randomUUID()
-    localStorage.setItem(SESSION_KEY, sessionId)
+  if (!sessionId.value) {
+    sessionId.value = crypto.randomUUID()
   }
 
-  return sessionId
+  return sessionId.value
 }
 
 export function getChatGuestProfile(): ChatGuestProfile | null {
-  if (!import.meta.client) return null
+  const stored = useChatProfileStorage().value
+  if (!stored) return null
 
-  try {
-    const raw = localStorage.getItem(PROFILE_KEY)
-    if (!raw) return null
+  const guestName = stored.guestName?.trim() ?? ''
+  const guestEmail = stored.guestEmail?.trim().toLowerCase() ?? ''
 
-    const parsed = JSON.parse(raw) as Partial<ChatGuestProfile>
-    const guestName = parsed.guestName?.trim() ?? ''
-    const guestEmail = parsed.guestEmail?.trim().toLowerCase() ?? ''
+  if (!guestName || !guestEmail) return null
 
-    if (!guestName || !guestEmail) return null
-
-    return { guestName, guestEmail }
-  } catch {
-    return null
-  }
+  return { guestName, guestEmail }
 }
 
 export function saveChatGuestProfile(profile: ChatGuestProfile): void {
-  if (!import.meta.client) return
-
-  localStorage.setItem(
-    PROFILE_KEY,
-    JSON.stringify({
-      guestName: profile.guestName.trim(),
-      guestEmail: profile.guestEmail.trim().toLowerCase(),
-    }),
-  )
+  useChatProfileStorage().value = {
+    guestName: profile.guestName.trim(),
+    guestEmail: profile.guestEmail.trim().toLowerCase(),
+  }
 }

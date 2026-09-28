@@ -1,3 +1,36 @@
+<script setup lang="ts">
+import { apiGetOrder } from '~/api/orders'
+import type { OrderStatus } from '~/types'
+
+const route = useRoute()
+const { t, te } = useI18n()
+const localePath = useLocalePath()
+const id = computed(() => String(route.query.id || ''))
+
+const {
+  data: orderResponse,
+  pending,
+  error,
+} = await apiGetOrder(id, {
+  immediate: Boolean(id.value),
+})
+
+const order = computed(() => orderResponse.value?.data)
+
+const statusLabel = computed(() => {
+  const status = order.value?.status as OrderStatus | undefined
+  if (!status) return ''
+  const key = `order.status.${status}`
+  return te(key) ? t(key) : status
+})
+
+useSeoPage({
+  title: t('order.success.seo.title'),
+  description: t('order.success.seo.description'),
+  path: '/order-success',
+})
+</script>
+
 <template>
   <div class="pt-28 md:pt-32 pb-12">
     <div class="mx-auto max-w-content px-5 md:px-8 lg:px-12">
@@ -32,31 +65,20 @@
                 <p class="mt-2 font-mono text-sm md:text-base break-all">{{ order._id }}</p>
               </div>
               <Separator />
-              <div
+              <CartLineRow
                 v-for="item in order.items"
                 :key="`${item.slug}-${item.weight}`"
-                class="flex justify-between gap-4"
-              >
-                <div>
-                  <p class="font-display">{{ formatCoffeeName(item.name) }}</p>
-                  <p class="text-sm text-muted-foreground mt-1">
-                    {{
-                      $t('order.success.item.meta', {
-                        weight: item.weight,
-                        quantity: item.quantity,
-                      })
-                    }}
-                  </p>
-                </div>
-                <p class="font-serif text-xl">{{ formatPrice(item.price * item.quantity) }}</p>
-              </div>
+                :name="item.name"
+                :meta="
+                  $t('order.success.item.meta', {
+                    weight: item.weight,
+                    quantity: item.quantity,
+                  })
+                "
+                :line-total="item.price * item.quantity"
+              />
               <Separator />
-              <div class="flex justify-between items-baseline">
-                <span class="text-xs tracking-[0.18em] uppercase text-muted-foreground">{{
-                  $t('order.success.total')
-                }}</span>
-                <span class="font-serif text-3xl">{{ formatPrice(order.totalPrice) }}</span>
-              </div>
+              <CartTotal :total="order.totalPrice" :label="$t('order.success.total')" />
             </CardContent>
           </Card>
 
@@ -93,36 +115,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { apiGetOrder } from '~/api/orders'
-import type { OrderStatus } from '~/types'
-
-const route = useRoute()
-const { t, te } = useI18n()
-const localePath = useLocalePath()
-const id = computed(() => String(route.query.id || ''))
-
-const {
-  data: orderResponse,
-  pending,
-  error,
-} = await apiGetOrder(id, {
-  immediate: Boolean(id.value),
-})
-
-const order = computed(() => orderResponse.value?.data)
-
-const statusLabel = computed(() => {
-  const status = order.value?.status as OrderStatus | undefined
-  if (!status) return ''
-  const key = `order.status.${status}`
-  return te(key) ? t(key) : status
-})
-
-useSeoPage({
-  title: t('order.success.seo.title'),
-  description: t('order.success.seo.description'),
-  path: '/order-success',
-})
-</script>

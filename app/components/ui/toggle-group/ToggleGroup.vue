@@ -6,18 +6,20 @@ import type { toggleVariants } from '@/components/ui/toggle'
 import { reactiveOmit } from '@vueuse/core'
 import { ToggleGroupRoot, useForwardPropsEmits } from 'reka-ui'
 import { provide } from 'vue'
-import { cn } from '@/lib/utils'
+import { cn } from '@/utils/cn'
 
 type ToggleGroupVariants = VariantProps<typeof toggleVariants>
 
-const props = defineProps<
-  ToggleGroupRootProps & {
-    class?: HTMLAttributes['class']
-    variant?: ToggleGroupVariants['variant']
-    size?: ToggleGroupVariants['size']
-  }
->()
-const emits = defineEmits<ToggleGroupRootEmits>()
+interface IProps extends ToggleGroupRootProps {
+  class?: HTMLAttributes['class']
+  variant?: ToggleGroupVariants['variant']
+  size?: ToggleGroupVariants['size']
+}
+
+type IEmits = ToggleGroupRootEmits
+
+const props = defineProps<IProps>()
+const emits = defineEmits<IEmits>()
 
 provide('toggleGroup', {
   variant: props.variant,

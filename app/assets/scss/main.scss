@@ -17,7 +17,7 @@ body {
   margin: 0;
   padding: 0;
   min-width: 320px;
-  overflow-x: auto;
+  overflow-x: clip;
 }
 
 ::selection {

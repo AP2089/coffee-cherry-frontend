@@ -1,3 +1,14 @@
+<script setup lang="ts">
+import type { Coffee } from '~/types'
+
+interface IProps {
+  coffee: Coffee
+}
+
+defineProps<IProps>()
+const localePath = useLocalePath()
+</script>
+
 <template>
   <NuxtLink
     :to="localePath(`/coffee/${coffee.slug}`)"
@@ -11,13 +22,6 @@
     />
   </NuxtLink>
 </template>
-
-<script setup lang="ts">
-import type { Coffee } from '~/types'
-
-defineProps<{ coffee: Coffee }>()
-const localePath = useLocalePath()
-</script>
 
 <style scoped lang="scss">
 .coffee-card img {

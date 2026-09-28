@@ -1,3 +1,16 @@
+<script setup lang="ts">
+import type { Coffee } from '~/types'
+
+interface IProps {
+  coffee: Coffee
+}
+
+const props = defineProps<IProps>()
+const { t } = useI18n()
+const theme = computed(() => useCoffeeTheme(props.coffee.slug))
+const mood = computed(() => t(`moods.${props.coffee.slug}` as 'moods.bloom'))
+</script>
+
 <template>
   <section
     class="coffee-atmosphere relative min-h-[100svh] flex items-end overflow-hidden"
@@ -38,15 +51,6 @@
     </div>
   </section>
 </template>
-
-<script setup lang="ts">
-import type { Coffee } from '~/types'
-
-const props = defineProps<{ coffee: Coffee }>()
-const { t } = useI18n()
-const theme = computed(() => useCoffeeTheme(props.coffee.slug))
-const mood = computed(() => t(`moods.${props.coffee.slug}` as 'moods.bloom'))
-</script>
 
 <style scoped lang="scss">
 .coffee-hero__image {

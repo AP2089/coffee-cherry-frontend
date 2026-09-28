@@ -1,4 +1,5 @@
-import { defineStore } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
+import { ref } from 'vue'
 import type { Socket } from 'socket.io-client'
 import type { ChatMessage } from '~/types/chat'
 import {
@@ -12,238 +13,257 @@ import { prependOlderMessages } from '~/utils/chat-messages'
 
 let socket: Socket | null = null
 
-export const useSupportChatStore = defineStore('supportChat', {
-  state: () => ({
-    isOpen: false,
-    isConnected: false,
-    isConnecting: false,
-    messages: [] as ChatMessage[],
-    messagesHasMore: false,
-    loadingMoreMessages: false,
-    unreadCount: 0,
-    error: null as string | null,
-    initialized: false,
-    guestName: '',
-    guestEmail: '',
-    profileReady: false,
-  }),
+export const useSupportChatStore = defineStore('supportChat', () => {
+  const isOpen = ref(false)
+  const isConnected = ref(false)
+  const isConnecting = ref(false)
+  const messages = ref<ChatMessage[]>([])
+  const messagesHasMore = ref(false)
+  const loadingMoreMessages = ref(false)
+  const unreadCount = ref(0)
+  const error = ref<string | null>(null)
+  const initialized = ref(false)
+  const guestName = ref('')
+  const guestEmail = ref('')
+  const profileReady = ref(false)
 
-  actions: {
-    hydrateProfile() {
-      const profile = getChatGuestProfile()
+  function hydrateProfile() {
+    const profile = getChatGuestProfile()
 
-      if (!profile) {
-        this.profileReady = false
-        return
-      }
+    if (!profile) {
+      profileReady.value = false
+      return
+    }
 
-      this.guestName = profile.guestName
-      this.guestEmail = profile.guestEmail
-      this.profileReady = true
-    },
+    guestName.value = profile.guestName
+    guestEmail.value = profile.guestEmail
+    profileReady.value = true
+  }
 
-    setProfile(profile: ChatGuestProfile) {
-      this.guestName = profile.guestName.trim()
-      this.guestEmail = profile.guestEmail.trim().toLowerCase()
-      saveChatGuestProfile({
-        guestName: this.guestName,
-        guestEmail: this.guestEmail,
-      })
-      this.profileReady = true
-      this.error = null
-    },
+  function setProfile(profile: ChatGuestProfile) {
+    guestName.value = profile.guestName.trim()
+    guestEmail.value = profile.guestEmail.trim().toLowerCase()
+    saveChatGuestProfile({
+      guestName: guestName.value,
+      guestEmail: guestEmail.value,
+    })
+    profileReady.value = true
+    error.value = null
+  }
 
-    toggle() {
-      this.isOpen = !this.isOpen
+  function toggle() {
+    isOpen.value = !isOpen.value
 
-      if (this.isOpen) {
-        this.unreadCount = 0
-        this.hydrateProfile()
-      }
-    },
+    if (isOpen.value) {
+      unreadCount.value = 0
+      hydrateProfile()
+    }
+  }
 
-    open() {
-      if (!this.isOpen) this.toggle()
-    },
+  function close() {
+    isOpen.value = false
+  }
 
-    close() {
-      this.isOpen = false
-    },
+  async function connect(locale = 'ru') {
+    if (!import.meta.client) return
 
-    async connect(locale = 'ru') {
-      if (!import.meta.client) return
+    hydrateProfile()
 
-      this.hydrateProfile()
+    if (!profileReady.value) return
 
-      if (!this.profileReady) return
+    const sessionId = getChatSessionId()
+    const chatLocale = locale === 'en' ? 'en' : 'ru'
+    const joinPayload = {
+      sessionId,
+      locale: chatLocale,
+      guestName: guestName.value,
+      guestEmail: guestEmail.value,
+    }
 
-      const sessionId = getChatSessionId()
-      const chatLocale = locale === 'en' ? 'en' : 'ru'
-      const joinPayload = {
-        sessionId,
-        locale: chatLocale,
-        guestName: this.guestName,
-        guestEmail: this.guestEmail,
-      }
+    if (socket?.connected) {
+      isConnected.value = true
+      isConnecting.value = false
+      socket.emit('support:join', joinPayload)
+      return
+    }
 
-      if (socket?.connected) {
-        this.isConnected = true
-        this.isConnecting = false
-        socket.emit('support:join', joinPayload)
-        return
-      }
+    if (isConnecting.value) return
 
-      if (this.isConnecting) return
+    isConnecting.value = true
+    error.value = null
+    messagesHasMore.value = false
+    loadingMoreMessages.value = false
 
-      this.isConnecting = true
-      this.error = null
-      this.messagesHasMore = false
-      this.loadingMoreMessages = false
+    const { io } = await import('socket.io-client')
 
-      const { io } = await import('socket.io-client')
+    if (socket) {
+      socket.removeAllListeners()
+      socket.disconnect()
+    }
 
-      if (socket) {
-        socket.removeAllListeners()
-        socket.disconnect()
-      }
+    socket = io(useSocketUrl(), {
+      transports: ['websocket', 'polling'],
+      path: '/socket.io',
+    })
 
-      socket = io(useSocketUrl(), {
-        transports: ['websocket', 'polling'],
-        path: '/socket.io',
-      })
+    socket.on('connect', () => {
+      isConnected.value = true
+      isConnecting.value = false
+      socket?.emit('support:join', joinPayload)
+    })
 
-      socket.on('connect', () => {
-        this.isConnected = true
-        this.isConnecting = false
-        socket?.emit('support:join', joinPayload)
-      })
+    socket.on('disconnect', () => {
+      isConnected.value = false
+    })
 
-      socket.on('disconnect', () => {
-        this.isConnected = false
-      })
+    socket.on(
+      'support:history',
+      (payload: {
+        messages?: ChatMessage[]
+        hasMore?: boolean
+        guestName?: string
+        guestEmail?: string
+      }) => {
+        messages.value = payload.messages ?? []
+        messagesHasMore.value = Boolean(payload.hasMore)
+        loadingMoreMessages.value = false
 
-      socket.on(
-        'support:history',
-        (payload: {
-          messages?: ChatMessage[]
-          hasMore?: boolean
-          guestName?: string
-          guestEmail?: string
-        }) => {
-          this.messages = payload.messages ?? []
-          this.messagesHasMore = Boolean(payload.hasMore)
-          this.loadingMoreMessages = false
+        if (payload.guestName) guestName.value = payload.guestName
+        if (payload.guestEmail) guestEmail.value = payload.guestEmail
 
-          if (payload.guestName) this.guestName = payload.guestName
-          if (payload.guestEmail) this.guestEmail = payload.guestEmail
+        initialized.value = true
+        error.value = null
+      },
+    )
 
-          this.initialized = true
-          this.error = null
-        },
-      )
+    socket.on(
+      'support:history-page',
+      (payload: { messages?: ChatMessage[]; hasMore?: boolean }) => {
+        const older = payload.messages ?? []
 
-      socket.on(
-        'support:history-page',
-        (payload: { messages?: ChatMessage[]; hasMore?: boolean }) => {
-          const older = payload.messages ?? []
-
-          if (!older.length) {
-            this.messagesHasMore = false
-            this.loadingMoreMessages = false
-            return
-          }
-
-          this.messages = prependOlderMessages(this.messages, older)
-          this.messagesHasMore = Boolean(payload.hasMore)
-          this.loadingMoreMessages = false
-        },
-      )
-
-      socket.on('support:message', (payload: { message?: ChatMessage }) => {
-        if (!payload.message) return
-
-        const exists = this.messages.some((message) => message.id === payload.message?.id)
-        if (exists) return
-
-        this.messages.push(payload.message)
-
-        if (!this.isOpen && payload.message.sender === 'agent') {
-          this.unreadCount += 1
-        }
-      })
-
-      socket.on('support:error', (payload: { message?: string }) => {
-        if (!this.loadingMoreMessages) {
-          this.error = payload.message ?? 'Chat error'
-        }
-        this.isConnecting = false
-        this.loadingMoreMessages = false
-      })
-
-      socket.on('connect_error', () => {
-        this.isConnected = false
-        this.isConnecting = false
-        this.error = 'connection'
-        this.loadingMoreMessages = false
-      })
-    },
-
-    loadOlderMessages() {
-      if (
-        !import.meta.client ||
-        this.loadingMoreMessages ||
-        !this.messagesHasMore ||
-        !this.messages.length ||
-        !socket?.connected
-      ) {
-        return Promise.resolve()
-      }
-
-      this.loadingMoreMessages = true
-      socket.emit('support:load-more', { before: this.messages[0]?.id })
-
-      return new Promise<void>((resolve) => {
-        let settled = false
-
-        const finish = () => {
-          if (settled) return
-          settled = true
-          clearTimeout(timeoutId)
-          socket?.off('support:history-page', onPage)
-          resolve()
+        if (!older.length) {
+          messagesHasMore.value = false
+          loadingMoreMessages.value = false
+          return
         }
 
-        const onPage = () => {
-          finish()
-        }
+        messages.value = prependOlderMessages(messages.value, older)
+        messagesHasMore.value = Boolean(payload.hasMore)
+        loadingMoreMessages.value = false
+      },
+    )
 
-        const timeoutId = setTimeout(() => {
-          this.loadingMoreMessages = false
-          finish()
-        }, 10_000)
+    socket.on('support:message', (payload: { message?: ChatMessage }) => {
+      if (!payload.message) return
 
-        socket?.once('support:history-page', onPage)
-      })
-    },
+      const exists = messages.value.some((message) => message.id === payload.message?.id)
+      if (exists) return
 
-    sendMessage(text: string) {
-      const trimmed = text.trim()
-      if (!trimmed || !socket?.connected) return false
+      messages.value.push(payload.message)
 
-      socket.emit('support:message', { text: trimmed })
-      return true
-    },
+      if (!isOpen.value && payload.message.sender === 'agent') {
+        unreadCount.value += 1
+      }
+    })
 
-    disconnect() {
-      if (socket) {
-        socket.removeAllListeners()
-        socket.disconnect()
-        socket = null
+    socket.on('support:error', (payload: { message?: string }) => {
+      if (!loadingMoreMessages.value) {
+        error.value = payload.message ?? 'Chat error'
+      }
+      isConnecting.value = false
+      loadingMoreMessages.value = false
+    })
+
+    socket.on('connect_error', () => {
+      isConnected.value = false
+      isConnecting.value = false
+      error.value = 'connection'
+      loadingMoreMessages.value = false
+    })
+  }
+
+  function loadOlderMessages() {
+    if (
+      !import.meta.client ||
+      loadingMoreMessages.value ||
+      !messagesHasMore.value ||
+      !messages.value.length ||
+      !socket?.connected
+    ) {
+      return Promise.resolve()
+    }
+
+    loadingMoreMessages.value = true
+    socket.emit('support:load-more', { before: messages.value[0]?.id })
+
+    return new Promise<void>((resolve) => {
+      let settled = false
+
+      const finish = () => {
+        if (settled) return
+        settled = true
+        clearTimeout(timeoutId)
+        socket?.off('support:history-page', onPage)
+        resolve()
       }
 
-      this.isConnected = false
-      this.isConnecting = false
-      this.loadingMoreMessages = false
-    },
-  },
+      const onPage = () => {
+        finish()
+      }
+
+      const timeoutId = setTimeout(() => {
+        loadingMoreMessages.value = false
+        finish()
+      }, 10_000)
+
+      socket?.once('support:history-page', onPage)
+    })
+  }
+
+  function sendMessage(text: string) {
+    const trimmed = text.trim()
+    if (!trimmed || !socket?.connected) return false
+
+    socket.emit('support:message', { text: trimmed })
+    return true
+  }
+
+  function disconnect() {
+    if (socket) {
+      socket.removeAllListeners()
+      socket.disconnect()
+      socket = null
+    }
+
+    isConnected.value = false
+    isConnecting.value = false
+    loadingMoreMessages.value = false
+  }
+
+  return {
+    isOpen,
+    isConnected,
+    isConnecting,
+    messages,
+    messagesHasMore,
+    loadingMoreMessages,
+    unreadCount,
+    error,
+    initialized,
+    guestName,
+    guestEmail,
+    profileReady,
+    hydrateProfile,
+    setProfile,
+    toggle,
+    close,
+    connect,
+    loadOlderMessages,
+    sendMessage,
+    disconnect,
+  }
 })
+
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useSupportChatStore, import.meta.hot))
+}

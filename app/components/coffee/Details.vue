@@ -1,3 +1,23 @@
+<script setup lang="ts">
+import type { Coffee } from '~/types'
+
+interface IProps {
+  coffee: Coffee
+}
+
+const props = defineProps<IProps>()
+const { t } = useI18n()
+
+const rows = computed(() => [
+  { label: t('coffee.country'), value: props.coffee.country },
+  { label: t('coffee.region'), value: props.coffee.region },
+  { label: t('coffee.variety'), value: props.coffee.variety },
+  { label: t('coffee.process'), value: props.coffee.process },
+  { label: t('coffee.altitude'), value: props.coffee.altitude },
+  { label: t('coffee.stock.label'), value: t('coffee.stock.bags', { count: props.coffee.stock }) },
+])
+</script>
+
 <template>
   <div>
     <dl class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-8 max-w-3xl">
@@ -17,19 +37,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import type { Coffee } from '~/types'
-
-const props = defineProps<{ coffee: Coffee }>()
-const { t } = useI18n()
-
-const rows = computed(() => [
-  { label: t('coffee.country'), value: props.coffee.country },
-  { label: t('coffee.region'), value: props.coffee.region },
-  { label: t('coffee.variety'), value: props.coffee.variety },
-  { label: t('coffee.process'), value: props.coffee.process },
-  { label: t('coffee.altitude'), value: props.coffee.altitude },
-  { label: t('coffee.stock.label'), value: t('coffee.stock.bags', { count: props.coffee.stock }) },
-])
-</script>

@@ -1,7 +1,8 @@
 import { StatusCodes } from 'http-status-codes'
 
 export default defineNuxtPlugin(() => {
-  const api = $fetch.create({
+  const apiContent = $fetch.create({
+    baseURL: useApiBase(),
     retry: 6,
     retryDelay: 10000,
     retryStatusCodes: [
@@ -13,11 +14,8 @@ export default defineNuxtPlugin(() => {
     ],
   })
 
-  const apiContent = api.create({ baseURL: useApiBase() })
-
   return {
     provide: {
-      api,
       apiContent,
     },
   }

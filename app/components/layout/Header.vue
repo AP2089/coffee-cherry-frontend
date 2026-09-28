@@ -1,3 +1,40 @@
+<script setup lang="ts">
+const cart = useCartStore()
+const route = useRoute()
+const { locale, locales } = useI18n()
+const switchLocalePath = useSwitchLocalePath()
+const localePath = useLocalePath()
+const { y } = useWindowScroll()
+const scrolled = computed(() => y.value > 24)
+const menuOpen = ref(false)
+const isBodyLocked = useScrollLock(import.meta.client ? document.body : null)
+
+const localeModel = computed({
+  get: () => locale.value,
+  set: () => {},
+})
+
+function navigateToLocale(code: string) {
+  closeMenu()
+  navigateTo(switchLocalePath(code))
+}
+
+function closeMenu() {
+  menuOpen.value = false
+}
+
+watch(
+  () => route.path,
+  () => {
+    closeMenu()
+  },
+)
+
+watch(menuOpen, (open) => {
+  isBodyLocked.value = open
+})
+</script>
+
 <template>
   <header
     class="fixed top-0 inset-x-0 z-30 transition-all duration-500 ease-premium"
@@ -76,16 +113,7 @@
           :aria-label="$t('nav.menu')"
           @click="menuOpen = true"
         >
-          <svg
-            class="h-5 w-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-            aria-hidden="true"
-          >
-            <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16" />
-          </svg>
+          <IconsMenu class="h-5 w-5" />
         </Button>
       </div>
     </div>
@@ -143,53 +171,3 @@
     </Sheet>
   </header>
 </template>
-
-<script setup lang="ts">
-const cart = useCartStore()
-const route = useRoute()
-const { locale, locales } = useI18n()
-const switchLocalePath = useSwitchLocalePath()
-const localePath = useLocalePath()
-const scrolled = ref(false)
-const menuOpen = ref(false)
-
-const localeModel = computed({
-  get: () => locale.value,
-  set: () => {},
-})
-
-function navigateToLocale(code: string) {
-  closeMenu()
-  navigateTo(switchLocalePath(code))
-}
-
-function closeMenu() {
-  menuOpen.value = false
-}
-
-watch(
-  () => route.path,
-  () => {
-    closeMenu()
-  },
-)
-
-watch(menuOpen, (open) => {
-  if (!import.meta.client) return
-  document.body.style.overflow = open ? 'hidden' : ''
-})
-
-onMounted(() => {
-  const onScroll = () => {
-    scrolled.value = window.scrollY > 24
-  }
-
-  onScroll()
-  window.addEventListener('scroll', onScroll, { passive: true })
-
-  onBeforeUnmount(() => {
-    window.removeEventListener('scroll', onScroll)
-    document.body.style.overflow = ''
-  })
-})
-</script>

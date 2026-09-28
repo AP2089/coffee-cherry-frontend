@@ -319,6 +319,12 @@
     "grams": "{weight} g",
     "scrollTop": "Back to top"
   },
+  "form": {
+    "personalDataConsent": {
+      "label": "I agree to the processing of personal data",
+      "required": "Consent to personal data processing is required"
+    }
+  },
   "support": {
     "label": "support",
     "title": "Support chat",

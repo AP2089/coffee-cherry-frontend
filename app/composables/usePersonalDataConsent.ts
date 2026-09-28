@@ -1,9 +1,7 @@
 import { z } from 'zod'
 
-export const PERSONAL_DATA_CONSENT_ERROR = 'Необходимо согласие на обработку персональных данных'
-
-export function personalDataConsentField() {
+export function personalDataConsentField(message: string) {
   return z.boolean().refine((value) => value === true, {
-    message: PERSONAL_DATA_CONSENT_ERROR,
+    message,
   })
 }

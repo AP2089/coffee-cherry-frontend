@@ -1,3 +1,19 @@
+<script setup lang="ts">
+defineOptions({
+  inheritAttrs: false,
+})
+
+interface IProps {
+  error?: string
+}
+
+defineProps<IProps>()
+
+const model = defineModel<boolean>({ default: false })
+const attrs = useAttrs()
+const inputId = useId()
+</script>
+
 <template>
   <div class="block">
     <div class="flex items-start gap-3">
@@ -12,23 +28,9 @@
         :for="inputId"
         class="cursor-pointer text-sm font-normal leading-relaxed text-muted-foreground"
       >
-        Я согласен(а) на обработку персональных данных
+        {{ $t('form.personalDataConsent.label') }}
       </Label>
     </div>
     <p v-if="error" class="mt-2 text-xs text-destructive">{{ error }}</p>
   </div>
 </template>
-
-<script setup lang="ts">
-defineOptions({
-  inheritAttrs: false,
-})
-
-defineProps<{
-  error?: string
-}>()
-
-const model = defineModel<boolean>({ default: false })
-const attrs = useAttrs()
-const inputId = useId()
-</script>

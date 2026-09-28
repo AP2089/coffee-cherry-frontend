@@ -1,3 +1,16 @@
+<script setup lang="ts">
+const consent = useCookie('cookie_consent', {
+  maxAge: 60 * 60 * 24 * 365,
+  sameSite: 'lax',
+})
+
+const isVisible = computed(() => consent.value !== 'accepted')
+
+function accept() {
+  consent.value = 'accepted'
+}
+</script>
+
 <template>
   <Transition
     enter-active-class="transition duration-300 ease-premium"
@@ -33,16 +46,3 @@
     </div>
   </Transition>
 </template>
-
-<script setup lang="ts">
-const consent = useCookie('cookie_consent', {
-  maxAge: 60 * 60 * 24 * 365,
-  sameSite: 'lax',
-})
-
-const isVisible = computed(() => consent.value !== 'accepted')
-
-function accept() {
-  consent.value = 'accepted'
-}
-</script>

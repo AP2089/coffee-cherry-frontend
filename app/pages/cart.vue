@@ -1,3 +1,17 @@
+<script setup lang="ts">
+const cart = useCartStore()
+const { t } = useI18n()
+const localePath = useLocalePath()
+
+useSeoPage({
+  title: t('cart.seo.title'),
+  description: t('cart.seo.description'),
+  path: '/cart',
+})
+
+onMounted(() => cart.hydrate())
+</script>
+
 <template>
   <div class="pt-28 md:pt-32 pb-12">
     <div class="mx-auto max-w-content px-5 md:px-8 lg:px-12">
@@ -24,12 +38,7 @@
         <div class="lg:col-span-4 lg:col-start-9">
           <Card class="sticky top-28 border-border">
             <CardContent class="space-y-5 p-6 md:p-8">
-              <div class="flex justify-between items-baseline">
-                <span class="text-xs tracking-[0.18em] uppercase text-muted-foreground">{{
-                  $t('cart.total')
-                }}</span>
-                <span class="font-serif text-3xl">{{ formatPrice(cart.getTotal) }}</span>
-              </div>
+              <CartTotal :total="cart.getTotal" :label="$t('cart.total')" />
               <p class="text-sm text-muted-foreground">
                 {{ $t('cart.items.count', { count: cart.getItemsCount }) }}
               </p>
@@ -48,17 +57,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-const cart = useCartStore()
-const { t } = useI18n()
-const localePath = useLocalePath()
-
-useSeoPage({
-  title: t('cart.seo.title'),
-  description: t('cart.seo.description'),
-  path: '/cart',
-})
-
-onMounted(() => cart.hydrate())
-</script>

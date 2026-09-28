@@ -1,3 +1,13 @@
+<script setup lang="ts">
+const ready = ref(false)
+
+onMounted(() => {
+  requestAnimationFrame(() => {
+    ready.value = true
+  })
+})
+</script>
+
 <template>
   <section class="hero relative min-h-[100svh] flex items-end overflow-hidden">
     <div class="absolute inset-0">
@@ -47,16 +57,6 @@
     </a>
   </section>
 </template>
-
-<script setup lang="ts">
-const ready = ref(false)
-
-onMounted(() => {
-  requestAnimationFrame(() => {
-    ready.value = true
-  })
-})
-</script>
 
 <style scoped lang="scss">
 @use '../../assets/scss/variables' as *;

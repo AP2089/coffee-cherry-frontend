@@ -1,70 +1,13 @@
-<template>
-  <form
-    class="support-chat__profile flex flex-1 flex-col justify-between overflow-y-auto"
-    @submit="onSubmit"
-  >
-    <div class="support-chat__profile-body">
-      <Alert class="mb-5 border-border bg-muted/60">
-        <AlertDescription class="text-sm leading-relaxed text-muted-foreground">
-          {{ $t('support.intro') }}
-        </AlertDescription>
-      </Alert>
-
-      <div class="space-y-4">
-        <div class="space-y-2">
-          <Label class="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">
-            {{ $t('support.fields.name') }}
-          </Label>
-          <Input
-            v-bind="nameAttrs"
-            v-model="name"
-            type="text"
-            autocomplete="name"
-            :placeholder="$t('support.fields.name')"
-            :class="{ 'border-destructive/55 bg-destructive/5': errors.name }"
-          />
-          <p v-if="errors.name" class="text-xs text-destructive">{{ errors.name }}</p>
-        </div>
-
-        <div class="space-y-2">
-          <Label class="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">
-            {{ $t('support.fields.email') }}
-          </Label>
-          <Input
-            v-bind="emailAttrs"
-            v-model="email"
-            type="email"
-            autocomplete="email"
-            :placeholder="$t('support.fields.email')"
-            :class="{ 'border-destructive/55 bg-destructive/5': errors.email }"
-          />
-          <p v-if="errors.email" class="text-xs text-destructive">{{ errors.email }}</p>
-        </div>
-
-        <FormPersonalDataConsent
-          v-model="personalDataConsent"
-          v-bind="personalDataConsentAttrs"
-          :error="errors.personalDataConsent"
-        />
-      </div>
-    </div>
-
-    <div class="support-chat__profile-footer">
-      <Button type="submit" variant="magnetic-filled" class="w-full px-4 py-3 tracking-[0.12em]">
-        {{ $t('support.start') }}
-      </Button>
-    </div>
-  </form>
-</template>
-
 <script setup lang="ts">
 import { configure, useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { z } from 'zod'
 
-const emit = defineEmits<{
+interface IEmits {
   submit: [values: { guestName: string; guestEmail: string }]
-}>()
+}
+
+const emit = defineEmits<IEmits>()
 
 const { t } = useI18n()
 
@@ -73,7 +16,7 @@ const validationSchema = computed(() =>
     z.object({
       name: z.string().trim().min(2, t('support.errors.name')),
       email: z.string().trim().email(t('support.errors.email')),
-      personalDataConsent: personalDataConsentField(),
+      personalDataConsent: personalDataConsentField(t('form.personalDataConsent.required')),
     }),
   ),
 )
@@ -149,6 +92,65 @@ onBeforeUnmount(() => {
   })
 })
 </script>
+
+<template>
+  <form
+    class="support-chat__profile flex flex-1 flex-col justify-between overflow-y-auto"
+    @submit="onSubmit"
+  >
+    <div class="support-chat__profile-body">
+      <Alert class="mb-5 border-border bg-muted/60">
+        <AlertDescription class="text-sm leading-relaxed text-muted-foreground">
+          {{ $t('support.intro') }}
+        </AlertDescription>
+      </Alert>
+
+      <div class="space-y-4">
+        <div class="space-y-2">
+          <Label class="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">
+            {{ $t('support.fields.name') }}
+          </Label>
+          <Input
+            v-bind="nameAttrs"
+            v-model="name"
+            type="text"
+            autocomplete="name"
+            :placeholder="$t('support.fields.name')"
+            :class="{ 'border-destructive/55 bg-destructive/5': errors.name }"
+          />
+          <p v-if="errors.name" class="text-xs text-destructive">{{ errors.name }}</p>
+        </div>
+
+        <div class="space-y-2">
+          <Label class="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">
+            {{ $t('support.fields.email') }}
+          </Label>
+          <Input
+            v-bind="emailAttrs"
+            v-model="email"
+            type="email"
+            autocomplete="email"
+            :placeholder="$t('support.fields.email')"
+            :class="{ 'border-destructive/55 bg-destructive/5': errors.email }"
+          />
+          <p v-if="errors.email" class="text-xs text-destructive">{{ errors.email }}</p>
+        </div>
+
+        <FormPersonalDataConsent
+          v-model="personalDataConsent"
+          v-bind="personalDataConsentAttrs"
+          :error="errors.personalDataConsent"
+        />
+      </div>
+    </div>
+
+    <div class="support-chat__profile-footer">
+      <Button type="submit" variant="magnetic-filled" class="w-full px-4 py-3 tracking-[0.12em]">
+        {{ $t('support.start') }}
+      </Button>
+    </div>
+  </form>
+</template>
 
 <style scoped lang="scss">
 .support-chat__profile {

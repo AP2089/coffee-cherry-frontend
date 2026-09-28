@@ -1,3 +1,66 @@
+<script setup lang="ts">
+import { useForm } from 'vee-validate'
+import { toTypedSchema } from '@vee-validate/zod'
+import { z } from 'zod'
+
+import { apiPostContact } from '~/api/contacts'
+
+const { t } = useI18n()
+const submitted = ref(false)
+const errorMessage = ref('')
+
+const validationSchema = computed(() =>
+  toTypedSchema(
+    z.object({
+      name: z.string().trim().min(2, t('contacts.form.errors.name')),
+      email: z.string().trim().email(t('contacts.form.errors.email')),
+      message: z.string().trim().min(10, t('contacts.form.errors.message')),
+      personalDataConsent: personalDataConsentField(t('form.personalDataConsent.required')),
+    }),
+  ),
+)
+
+const { handleSubmit, defineField, errors, isSubmitting, resetForm } = useForm({
+  validationSchema,
+  initialValues: {
+    name: '',
+    email: '',
+    message: '',
+    personalDataConsent: false,
+  },
+})
+
+const [name, nameAttrs] = defineField('name')
+const [email, emailAttrs] = defineField('email')
+const [message, messageAttrs] = defineField('message')
+const [personalDataConsent, personalDataConsentAttrs] = defineField('personalDataConsent')
+
+const onSubmit = handleSubmit(async (values) => {
+  submitted.value = false
+  errorMessage.value = ''
+
+  try {
+    const response = await apiPostContact({
+      name: values.name,
+      email: values.email,
+      message: values.message,
+    })
+
+    if (!response.success || !response.data) {
+      throw new Error(response.message || 'Failed to send message')
+    }
+    submitted.value = true
+    resetForm()
+  } catch (err: unknown) {
+    const message =
+      err && typeof err === 'object' && 'data' in err
+        ? String((err as { data?: { message?: string } }).data?.message || '')
+        : ''
+    errorMessage.value = message || t('checkout.error.fallback')
+  }
+})
+</script>
+
 <template>
   <div class="space-y-6">
     <Alert v-if="submitted" class="border-primary/30 bg-primary/10 text-primary">
@@ -65,66 +128,3 @@
     </form>
   </div>
 </template>
-
-<script setup lang="ts">
-import { useForm } from 'vee-validate'
-import { toTypedSchema } from '@vee-validate/zod'
-import { z } from 'zod'
-
-import { apiPostContact } from '~/api/contacts'
-
-const { t } = useI18n()
-const submitted = ref(false)
-const errorMessage = ref('')
-
-const validationSchema = computed(() =>
-  toTypedSchema(
-    z.object({
-      name: z.string().trim().min(2, t('contacts.form.errors.name')),
-      email: z.string().trim().email(t('contacts.form.errors.email')),
-      message: z.string().trim().min(10, t('contacts.form.errors.message')),
-      personalDataConsent: personalDataConsentField(),
-    }),
-  ),
-)
-
-const { handleSubmit, defineField, errors, isSubmitting, resetForm } = useForm({
-  validationSchema,
-  initialValues: {
-    name: '',
-    email: '',
-    message: '',
-    personalDataConsent: false,
-  },
-})
-
-const [name, nameAttrs] = defineField('name')
-const [email, emailAttrs] = defineField('email')
-const [message, messageAttrs] = defineField('message')
-const [personalDataConsent, personalDataConsentAttrs] = defineField('personalDataConsent')
-
-const onSubmit = handleSubmit(async (values) => {
-  submitted.value = false
-  errorMessage.value = ''
-
-  try {
-    const response = await apiPostContact({
-      name: values.name,
-      email: values.email,
-      message: values.message,
-    })
-
-    if (!response.success || !response.data) {
-      throw new Error(response.message || 'Failed to send message')
-    }
-    submitted.value = true
-    resetForm()
-  } catch (err: unknown) {
-    const message =
-      err && typeof err === 'object' && 'data' in err
-        ? String((err as { data?: { message?: string } }).data?.message || '')
-        : ''
-    errorMessage.value = message || t('checkout.error.fallback')
-  }
-})
-</script>
