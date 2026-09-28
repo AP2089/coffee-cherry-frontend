@@ -25,9 +25,5 @@ export function useReveal(options?: { threshold?: number }) {
     io.observe(el)
   }
 
-  const revealRef = (el: Element | null) => {
-    observe(el)
-  }
-
-  return { revealRef, observe }
+  return { observe }
 }

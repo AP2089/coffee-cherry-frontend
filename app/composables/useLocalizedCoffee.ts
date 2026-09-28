@@ -1,9 +1,5 @@
 import type { Coffee, CartItem } from '~/types'
 
-export function localizeCoffee(coffee: Coffee): Coffee {
-  return coffee
-}
-
 export function localizeCartItem(item: CartItem): CartItem {
   const { locale, t, te } = useI18n()
 
@@ -20,9 +16,5 @@ export function localizeCartItem(item: CartItem): CartItem {
 }
 
 export function useLocalizedCoffee(coffee: MaybeRefOrGetter<Coffee | null | undefined>) {
-  return computed(() => {
-    const value = toValue(coffee)
-    if (!value) return null
-    return localizeCoffee(value)
-  })
+  return computed(() => toValue(coffee) ?? null)
 }

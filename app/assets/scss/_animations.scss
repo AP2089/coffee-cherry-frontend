@@ -1,56 +1,5 @@
 @use 'variables' as *;
 
-@keyframes float-slow {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-12px) rotate(1deg);
-  }
-}
-
-@keyframes reveal-up {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes image-reveal {
-  from {
-    clip-path: inset(12% 12% 12% 12%);
-    transform: scale(1.08);
-  }
-  to {
-    clip-path: inset(0 0 0 0);
-    transform: scale(1);
-  }
-}
-
-@keyframes line-grow {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-
-@keyframes pulse-soft {
-  0%,
-  100% {
-    opacity: 0.4;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
 .reveal {
   opacity: 0;
   transition: opacity 0.85s $ease-premium;
@@ -132,23 +81,6 @@
   transition-delay: 0.18s;
 }
 
-.image-reveal {
-  overflow: hidden;
-
-  img,
-  .image-reveal__inner {
-    transform: scale(1.08);
-    transition: transform 1.4s $ease-premium;
-  }
-
-  &.is-visible {
-    img,
-    .image-reveal__inner {
-      transform: scale(1);
-    }
-  }
-}
-
 .text-reveal {
   overflow: hidden;
 
@@ -160,26 +92,5 @@
 
   &.is-visible span {
     transform: translateY(0);
-  }
-}
-
-.skeleton {
-  background: linear-gradient(
-    90deg,
-    rgba($bone, 0.04) 0%,
-    rgba($bone, 0.1) 50%,
-    rgba($bone, 0.04) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.4s ease infinite;
-  border-radius: 2px;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
   }
 }

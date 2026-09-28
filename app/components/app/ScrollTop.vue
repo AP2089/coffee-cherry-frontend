@@ -1,3 +1,30 @@
+<script setup lang="ts">
+const SHOW_START = 280
+const SHOW_END = 520
+
+const { y } = useWindowScroll()
+
+const progress = computed(() => {
+  if (y.value <= SHOW_START) return 0
+  if (y.value >= SHOW_END) return 1
+  return (y.value - SHOW_START) / (SHOW_END - SHOW_START)
+})
+
+const buttonStyle = computed(() => {
+  const p = progress.value
+  const eased = 1 - (1 - p) ** 2
+  return {
+    opacity: String(eased),
+    transform: `translateY(${(1 - eased) * 16}px) scale(${0.92 + eased * 0.08})`,
+    pointerEvents: p > 0.2 ? 'auto' : 'none',
+  }
+})
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+</script>
+
 <template>
   <Button
     type="button"
@@ -13,46 +40,6 @@
     <span class="scroll-top__chevron" aria-hidden="true" />
   </Button>
 </template>
-
-<script setup lang="ts">
-const SHOW_START = 280
-const SHOW_END = 520
-
-const progress = ref(0)
-
-const buttonStyle = computed(() => {
-  const p = progress.value
-  const eased = 1 - (1 - p) ** 2
-  return {
-    opacity: String(eased),
-    transform: `translateY(${(1 - eased) * 16}px) scale(${0.92 + eased * 0.08})`,
-    pointerEvents: p > 0.2 ? 'auto' : 'none',
-  }
-})
-
-function onScroll() {
-  const y = window.scrollY
-  if (y <= SHOW_START) {
-    progress.value = 0
-    return
-  }
-  if (y >= SHOW_END) {
-    progress.value = 1
-    return
-  }
-  progress.value = (y - SHOW_START) / (SHOW_END - SHOW_START)
-}
-
-function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-}
-
-onMounted(() => {
-  onScroll()
-  window.addEventListener('scroll', onScroll, { passive: true })
-  onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
-})
-</script>
 
 <style scoped lang="scss">
 @use '../../assets/scss/variables' as *;

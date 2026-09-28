@@ -6,10 +6,6 @@ export function isNearScrollTop(element: HTMLElement, distance = LOAD_DISTANCE) 
   return element.scrollTop <= distance
 }
 
-export function isNearScrollBottom(element: HTMLElement, distance = LOAD_DISTANCE) {
-  return element.scrollTop + element.clientHeight >= element.scrollHeight - distance
-}
-
 interface ScrollLoadOptions {
   canLoadMore: () => boolean
   isScrollTrigger: (element: HTMLElement) => boolean

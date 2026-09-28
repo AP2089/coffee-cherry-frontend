@@ -50,7 +50,7 @@ export default defineNuxtConfig({
     },
   },
 
-  css: ['~/assets/css/tailwind.css', '~/assets/scss/main.scss'],
+  css: ['~/assets/scss/tailwind.css', '~/assets/scss/main.scss'],
 
   runtimeConfig: {
     apiUrl: '',

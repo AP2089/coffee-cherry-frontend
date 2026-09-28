@@ -1,3 +1,70 @@
+<script setup lang="ts">
+import { useForm } from 'vee-validate'
+import { toTypedSchema } from '@vee-validate/zod'
+import { z } from 'zod'
+import type { Customer } from '~/types'
+
+interface IProps {
+  loading?: boolean
+}
+
+interface IEmits {
+  submit: [customer: Customer]
+}
+
+const props = defineProps<IProps>()
+const emit = defineEmits<IEmits>()
+const { t } = useI18n()
+
+const validationSchema = computed(() =>
+  toTypedSchema(
+    z.object({
+      name: z.string().trim().min(2, t('checkout.errors.name')),
+      phone: z.string().trim().min(6, t('checkout.errors.phone')),
+      email: z.string().trim().email(t('checkout.errors.email')),
+      city: z.string().trim().min(2, t('checkout.errors.city')),
+      address: z.string().trim().min(5, t('checkout.errors.address')),
+      comment: z.string().trim(),
+      personalDataConsent: personalDataConsentField(t('form.personalDataConsent.required')),
+    }),
+  ),
+)
+
+const { handleSubmit, defineField, errors } = useForm({
+  validationSchema,
+  initialValues: {
+    name: '',
+    phone: '',
+    email: '',
+    city: '',
+    address: '',
+    comment: '',
+    personalDataConsent: false,
+  },
+})
+
+const [name, nameAttrs] = defineField('name')
+const [phone, phoneAttrs] = defineField('phone')
+const [email, emailAttrs] = defineField('email')
+const [city, cityAttrs] = defineField('city')
+const [address, addressAttrs] = defineField('address')
+const [comment, commentAttrs] = defineField('comment')
+const [personalDataConsent, personalDataConsentAttrs] = defineField('personalDataConsent')
+
+const onSubmit = handleSubmit((values) => {
+  if (props.loading) return
+
+  emit('submit', {
+    name: values.name,
+    phone: values.phone,
+    email: values.email,
+    city: values.city,
+    address: values.address,
+    comment: values.comment || '',
+  })
+})
+</script>
+
 <template>
   <form class="space-y-6" @submit="onSubmit">
     <div class="grid md:grid-cols-2 gap-5">
@@ -102,62 +169,3 @@
     </Button>
   </form>
 </template>
-
-<script setup lang="ts">
-import { useForm } from 'vee-validate'
-import { toTypedSchema } from '@vee-validate/zod'
-import { z } from 'zod'
-import type { Customer } from '~/types'
-
-const props = defineProps<{ loading?: boolean }>()
-const emit = defineEmits<{ submit: [customer: Customer] }>()
-const { t } = useI18n()
-
-const validationSchema = computed(() =>
-  toTypedSchema(
-    z.object({
-      name: z.string().trim().min(2, t('checkout.errors.name')),
-      phone: z.string().trim().min(6, t('checkout.errors.phone')),
-      email: z.string().trim().email(t('checkout.errors.email')),
-      city: z.string().trim().min(2, t('checkout.errors.city')),
-      address: z.string().trim().min(5, t('checkout.errors.address')),
-      comment: z.string().trim(),
-      personalDataConsent: personalDataConsentField(),
-    }),
-  ),
-)
-
-const { handleSubmit, defineField, errors } = useForm({
-  validationSchema,
-  initialValues: {
-    name: '',
-    phone: '',
-    email: '',
-    city: '',
-    address: '',
-    comment: '',
-    personalDataConsent: false,
-  },
-})
-
-const [name, nameAttrs] = defineField('name')
-const [phone, phoneAttrs] = defineField('phone')
-const [email, emailAttrs] = defineField('email')
-const [city, cityAttrs] = defineField('city')
-const [address, addressAttrs] = defineField('address')
-const [comment, commentAttrs] = defineField('comment')
-const [personalDataConsent, personalDataConsentAttrs] = defineField('personalDataConsent')
-
-const onSubmit = handleSubmit((values) => {
-  if (props.loading) return
-
-  emit('submit', {
-    name: values.name,
-    phone: values.phone,
-    email: values.email,
-    city: values.city,
-    address: values.address,
-    comment: values.comment || '',
-  })
-})
-</script>

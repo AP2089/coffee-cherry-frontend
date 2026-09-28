@@ -1,3 +1,23 @@
+<script setup lang="ts">
+interface IProps {
+  label?: string
+  disabled?: boolean
+  loading?: boolean
+}
+
+interface IEmits {
+  add: []
+}
+
+withDefaults(defineProps<IProps>(), {
+  label: undefined,
+  disabled: false,
+  loading: false,
+})
+
+defineEmits<IEmits>()
+</script>
+
 <template>
   <Button
     type="button"
@@ -9,20 +29,3 @@
     {{ loading ? $t('coffee.adding') : label || $t('coffee.add.to.cart') }}
   </Button>
 </template>
-
-<script setup lang="ts">
-withDefaults(
-  defineProps<{
-    label?: string
-    disabled?: boolean
-    loading?: boolean
-  }>(),
-  {
-    label: undefined,
-    disabled: false,
-    loading: false,
-  },
-)
-
-defineEmits<{ add: [] }>()
-</script>

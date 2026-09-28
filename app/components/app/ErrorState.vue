@@ -1,30 +1,17 @@
-<template>
-  <div class="mx-auto max-w-lg text-center py-24 px-6">
-    <p class="font-serif text-3xl md:text-4xl text-foreground/90">{{ titleText }}</p>
-    <p class="mt-4 text-muted-foreground leading-relaxed">{{ descriptionText }}</p>
-    <Button v-if="actionTo" variant="magnetic" class="mt-10 px-6 py-3" as-child>
-      <NuxtLink :to="resolvedActionTo">
-        {{ actionLabelText }}
-      </NuxtLink>
-    </Button>
-  </div>
-</template>
-
 <script setup lang="ts">
-const props = withDefaults(
-  defineProps<{
-    title?: string
-    description?: string
-    actionTo?: string
-    actionLabel?: string
-  }>(),
-  {
-    title: undefined,
-    description: undefined,
-    actionTo: '/',
-    actionLabel: undefined,
-  },
-)
+interface IProps {
+  title?: string
+  description?: string
+  actionTo?: string
+  actionLabel?: string
+}
+
+const props = withDefaults(defineProps<IProps>(), {
+  title: undefined,
+  description: undefined,
+  actionTo: '/',
+  actionLabel: undefined,
+})
 
 const { t } = useI18n()
 const localePath = useLocalePath()
@@ -41,3 +28,15 @@ const resolvedActionTo = computed(() => {
   return localePath(props.actionTo)
 })
 </script>
+
+<template>
+  <div class="mx-auto max-w-lg text-center py-24 px-6">
+    <p class="font-serif text-3xl md:text-4xl text-foreground/90">{{ titleText }}</p>
+    <p class="mt-4 text-muted-foreground leading-relaxed">{{ descriptionText }}</p>
+    <Button v-if="actionTo" variant="magnetic" class="mt-10 px-6 py-3" as-child>
+      <NuxtLink :to="resolvedActionTo">
+        {{ actionLabelText }}
+      </NuxtLink>
+    </Button>
+  </div>
+</template>

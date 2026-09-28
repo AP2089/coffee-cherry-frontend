@@ -1,3 +1,13 @@
+<script setup lang="ts">
+const { t } = useI18n()
+
+useSeoPage({
+  title: t('contacts.seo.title'),
+  description: t('contacts.seo.description'),
+  path: '/contacts',
+})
+</script>
+
 <template>
   <div class="pt-28 md:pt-32 pb-12 md:pb-20">
     <section class="mx-auto max-w-content px-5 md:px-8 lg:px-12">
@@ -51,13 +61,3 @@
     </section>
   </div>
 </template>
-
-<script setup lang="ts">
-const { t } = useI18n()
-
-useSeoPage({
-  title: t('contacts.seo.title'),
-  description: t('contacts.seo.description'),
-  path: '/contacts',
-})
-</script>

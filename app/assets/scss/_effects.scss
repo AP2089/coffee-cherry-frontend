@@ -62,21 +62,6 @@
   }
 }
 
-.parallax-layer {
-  will-change: transform;
-  transition: transform 0.15s linear;
-}
-
-.hover-lift {
-  transition:
-    transform 0.6s $ease-premium,
-    filter 0.6s $ease-premium;
-
-  &:hover {
-    transform: translateY(-8px) scale(1.01);
-  }
-}
-
 .cursor-glow {
   position: fixed;
   width: 220px;
@@ -114,8 +99,4 @@
     );
     opacity: 0.55;
   }
-}
-
-.tilt-card {
-  transform-style: preserve-3d;
 }

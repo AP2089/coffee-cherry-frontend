@@ -1,3 +1,9 @@
+<script setup lang="ts">
+const localePath = useLocalePath()
+const slugs = ['bloom', 'velvet', 'santos', 'noir', 'ember'] as const
+const year = new Date().getFullYear()
+</script>
+
 <template>
   <footer class="border-t border-bone/10 mt-12 md:mt-20">
     <div
@@ -48,9 +54,3 @@
     </div>
   </footer>
 </template>
-
-<script setup lang="ts">
-const localePath = useLocalePath()
-const slugs = ['bloom', 'velvet', 'santos', 'noir', 'ember'] as const
-const year = new Date().getFullYear()
-</script>

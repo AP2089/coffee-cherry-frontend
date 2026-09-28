@@ -1,120 +1,82 @@
-import { defineStore } from 'pinia'
-import type { CartItem, Coffee, CoffeeWeight } from '~/types'
+import { acceptHMRUpdate, defineStore } from 'pinia'
+import { computed, ref } from 'vue'
+import type { Coffee, CoffeeWeight } from '~/types'
+import { calcCoffeePrice } from '~/utils/coffee-pricing'
+import { normalizeCartImage, useCartItemsStorage } from '~/utils/cart-storage'
 
-const STORAGE_KEY = 'coffee-cherry-cart'
+export const useCartStore = defineStore('cart', () => {
+  const items = useCartItemsStorage()
+  const hydrated = ref(false)
 
-const WEIGHT_MULTIPLIER: Record<CoffeeWeight, number> = {
-  250: 1,
-  500: 1.9,
-  1000: 3.6,
-}
+  const getItemsCount = computed(() => items.value.reduce((sum, item) => sum + item.quantity, 0))
 
-function calcPrice(basePrice: number, weight: CoffeeWeight): number {
-  return Math.round(basePrice * WEIGHT_MULTIPLIER[weight])
-}
+  const getTotal = computed(() =>
+    items.value.reduce((sum, item) => sum + item.price * item.quantity, 0),
+  )
 
-function normalizeImage(image: string | undefined, slug: string): string {
-  if (image && /\.(jpe?g|png|webp)$/i.test(image)) {
-    return image
+  function hydrate() {
+    if (hydrated.value) return
+    hydrated.value = true
   }
-  return `/images/${slug}.jpg`
-}
 
-function loadCart(): CartItem[] {
-  if (!import.meta.client) return []
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return []
-    const parsed = JSON.parse(raw) as CartItem[]
-    if (!Array.isArray(parsed)) return []
+  function addItem(coffee: Coffee, weight: CoffeeWeight, quantity = 1) {
+    hydrate()
+    const price = calcCoffeePrice(coffee.price, weight)
+    const image = normalizeCartImage(coffee.image, coffee.slug)
+    const existing = items.value.find((i) => i.slug === coffee.slug && i.weight === weight)
 
-    return parsed.map((item) => ({
-      ...item,
-      image: normalizeImage(item.image, item.slug),
-    }))
-  } catch {
-    return []
+    if (existing) {
+      existing.quantity += quantity
+      existing.image = image
+      existing.country = coffee.country
+      existing.name = coffee.name
+      existing.price = price
+    } else {
+      items.value.push({
+        slug: coffee.slug,
+        name: coffee.name,
+        weight,
+        quantity,
+        price,
+        image,
+        country: coffee.country,
+      })
+    }
   }
-}
 
-function saveCart(items: CartItem[]): void {
-  if (!import.meta.client) return
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
-}
+  function removeItem(slug: string, weight: CoffeeWeight) {
+    items.value = items.value.filter((i) => !(i.slug === slug && i.weight === weight))
+  }
 
-export const useCartStore = defineStore('cart', {
-  state: () => ({
-    items: [] as CartItem[],
-    hydrated: false,
-  }),
+  function updateQuantity(slug: string, weight: CoffeeWeight, quantity: number) {
+    const item = items.value.find((i) => i.slug === slug && i.weight === weight)
+    if (!item) return
 
-  getters: {
-    getItemsCount: (state): number => state.items.reduce((sum, item) => sum + item.quantity, 0),
+    if (quantity <= 0) {
+      removeItem(slug, weight)
+      return
+    }
 
-    getTotal: (state): number =>
-      state.items.reduce((sum, item) => sum + item.price * item.quantity, 0),
-  },
+    item.quantity = quantity
+  }
 
-  actions: {
-    hydrate() {
-      if (this.hydrated) return
-      this.items = loadCart()
-      this.hydrated = true
-      this.persist()
-    },
+  function clearCart() {
+    items.value = []
+  }
 
-    persist() {
-      saveCart(this.items)
-    },
-
-    addItem(coffee: Coffee, weight: CoffeeWeight, quantity = 1) {
-      this.hydrate()
-      const price = calcPrice(coffee.price, weight)
-      const image = normalizeImage(coffee.image, coffee.slug)
-      const existing = this.items.find((i) => i.slug === coffee.slug && i.weight === weight)
-
-      if (existing) {
-        existing.quantity += quantity
-        existing.image = image
-        existing.country = coffee.country
-        existing.name = coffee.name
-        existing.price = price
-      } else {
-        this.items.push({
-          slug: coffee.slug,
-          name: coffee.name,
-          weight,
-          quantity,
-          price,
-          image,
-          country: coffee.country,
-        })
-      }
-
-      this.persist()
-    },
-
-    removeItem(slug: string, weight: CoffeeWeight) {
-      this.items = this.items.filter((i) => !(i.slug === slug && i.weight === weight))
-      this.persist()
-    },
-
-    updateQuantity(slug: string, weight: CoffeeWeight, quantity: number) {
-      const item = this.items.find((i) => i.slug === slug && i.weight === weight)
-      if (!item) return
-
-      if (quantity <= 0) {
-        this.removeItem(slug, weight)
-        return
-      }
-
-      item.quantity = quantity
-      this.persist()
-    },
-
-    clearCart() {
-      this.items = []
-      this.persist()
-    },
-  },
+  return {
+    items,
+    hydrated,
+    getItemsCount,
+    getTotal,
+    hydrate,
+    addItem,
+    removeItem,
+    updateQuantity,
+    clearCart,
+  }
 })
+
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useCartStore, import.meta.hot))
+}

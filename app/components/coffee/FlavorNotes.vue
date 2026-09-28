@@ -1,3 +1,12 @@
+<script setup lang="ts">
+interface IProps {
+  notes: string[]
+  accent: string
+}
+
+defineProps<IProps>()
+</script>
+
 <template>
   <div>
     <p class="text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-5">
@@ -20,13 +29,6 @@
     </ul>
   </div>
 </template>
-
-<script setup lang="ts">
-defineProps<{
-  notes: string[]
-  accent: string
-}>()
-</script>
 
 <style scoped lang="scss">
 @use '../../assets/scss/variables' as *;
